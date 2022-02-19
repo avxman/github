@@ -3,7 +3,7 @@
 return [
 
     // Вкл./Откл. работу через Github
-    'GITHUB_ENABLED'=>env('GITHUB_ENABLED', true),
+    'GITHUB_ENABLED'=>env('GITHUB_ENABLED', false),
 
     // Вывод результатов в логи
     'IS_DEBUG'=>env('GITHUB_DEBUG', true),
