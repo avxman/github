@@ -10,3 +10,6 @@ Host github github.com
     User user # указываем имя пользователя в ОС, в основном это имя узнать через фтп
     IdentityFile ~/.ssh/name_repository # указывать закрытый (private) ключ
 ```
+```text
+
+```
