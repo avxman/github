@@ -6,15 +6,17 @@ namespace Avxman\Github\Events;
  *
  * Работа с событиями Гитхаба через Web
  *
-*/
+ */
 class SiteEvent extends BaseEvent
 {
+
+    protected array $allowMethods = ['version', 'pull', 'checkout', 'status', 'log'];
 
     /**
      * *Версия Гитхаба установлена на сайте (хостинг или сервер)
      * @param array $data
      * @return void
-    */
+     */
     protected function version(array $data = []) : void{
         $command = $this->commandGenerate("--version");
         $this->writtingLog(
@@ -92,7 +94,8 @@ class SiteEvent extends BaseEvent
 
         $this->is_event = true;
         $event = strtolower(request()->get('payload')['event']??'version');
-        $this->{$event}($data);
+        if($this->allowedMethod($event)) {$this->{$event}($data);}
+        else {$this->is_event = false;}
 
         return $this->is_event;
 

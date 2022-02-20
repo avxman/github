@@ -8,15 +8,17 @@ use Illuminate\Support\Str;
  *
  * Работа с событиями Гитхаба через API
  *
-*/
+ */
 class GithubEvent extends BaseEvent
 {
+
+    protected array $allowMethods = ['default', 'ping', 'push'];
 
     /**
      * *Версия Гитхаба установлена на сайте (хостинг или сервер)
      * @param array $data
      * @return void
-    */
+     */
     protected function default(array $data) : void{
         $command = $this->commandGenerate('--version');
         $this->writtingLog(
@@ -58,7 +60,8 @@ class GithubEvent extends BaseEvent
 
         $this->is_event = true;
         $event = strtolower($this->server['HTTP_X_GITHUB_EVENT']??'default');
-        $this->{$event}($data);
+        if($this->allowedMethod($event)) {$this->{$event}($data);}
+        else {$this->is_event = false;}
 
         return $this->is_event;
 

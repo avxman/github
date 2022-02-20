@@ -8,9 +8,11 @@ use Illuminate\Support\Str;
  *
  * Работа с событиями Авторизации пользователя и Регистрации репозитория
  *
-*/
+ */
 class RegistrationEvent extends BaseEvent
 {
+
+    protected array $allowMethods = ['registration'];
 
     protected function commandGenerate(string $command) : string{
         return $this->command("git{$this->addGithubFolder()}{$command}{$this->commandLineLog()}");
@@ -31,7 +33,7 @@ class RegistrationEvent extends BaseEvent
      * Авторизируем пользователя и регистрируем репозиторий
      * @param array $data
      * @return void
-    */
+     */
     protected function registration(array $data) : void{
         // Инициализация параметров
         $email_github = 'git@github.com';

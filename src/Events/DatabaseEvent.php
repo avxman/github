@@ -12,14 +12,16 @@ use Illuminate\Support\Str;
  *
  * Работа с событиями Базой Данных с помощью Web
  *
-*/
+ */
 class DatabaseEvent extends BaseEvent
 {
+
+    protected array $allowMethods = ['import', 'export', 'backups', 'download'];
 
     /**
      * *Логин к БД
      * @var string $USER
-    */
+     */
     protected string $USER = '';
 
     /**
@@ -73,7 +75,7 @@ class DatabaseEvent extends BaseEvent
     /**
      * *Получение пути к БД для импорта или экспорта
      * @return string
-    */
+     */
     protected function getFolder() : string{
         if(!Storage::exists('database')){
             Storage::makeDirectory('database');
@@ -130,7 +132,7 @@ class DatabaseEvent extends BaseEvent
      * Импорт БД
      * @param array $data
      * @return void
-    */
+     */
     protected function import(array $data): void{
         //$this->commandRaw("mysqldump{$this->USER}{$this->PASSWORD}{$this->HOST}{$this->PORT}{$this->DATABASE} < {$this->FOLDER}/{$this->FILE}", true);
         $command = "В процессе написания кода импорта в Базу Данных";
@@ -146,7 +148,7 @@ class DatabaseEvent extends BaseEvent
      * Экспорт БД
      * @param array $data
      * @return void
-    */
+     */
     protected function export(array $data): void{
         $connecntion = $this->commandRaw("mysqldump{$this->USER}{$this->PASSWORD}{$this->HOST}{$this->PORT}{$this->DATABASE} -V", false);
         if(Str::contains($connecntion, 'Ver')) {
@@ -168,7 +170,7 @@ class DatabaseEvent extends BaseEvent
      * Список всех бэкапов БД
      * @param array $data
      * @return void
-    */
+     */
     protected function backups(array $data) : void{
         $command = $this->commandRaw("ls {$this->FOLDER}");
         $this->writtingLog(
@@ -196,7 +198,7 @@ class DatabaseEvent extends BaseEvent
      * Скачивание БД
      * @param array $data
      * @return void
-    */
+     */
     protected function download(array $data) : void{
         if($data['url']??false && !empty($data['url']) && Storage::exists('database/'.$data['url'])){
             if($data['delete']??false && (bool)$data['delete'] === true){
@@ -223,7 +225,8 @@ class DatabaseEvent extends BaseEvent
         $this->is_event = true;
         $this->generateDatabaseData($data);
         $event = strtolower(request()->get('payload')['event']??'version');
-        $this->{$event}($data);
+        if($this->allowedMethod($event)) {$this->{$event}($data);}
+        else {$this->is_event = false;}
 
         return $this->is_event;
 

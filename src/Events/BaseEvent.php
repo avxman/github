@@ -17,8 +17,14 @@ abstract class BaseEvent
     /**
      * *Событие существует в виде метода
      * @var bool $is_event
-    */
+     */
     public bool $is_event = false;
+
+    /**
+     * *Разрешающие методы
+     * @var array $allowMethods
+     */
+    protected array $allowMethods = [];
 
     /**
      * *Логирование действий
@@ -45,12 +51,21 @@ abstract class BaseEvent
     protected array $result = [];
 
     /**
+     * *Проверка на использование выбранного метода
+     * @param string $name_method
+     * @return bool
+     */
+    protected function allowedMethod(string $name_method) : bool{
+        return in_array($name_method, $this->allowMethods);
+    }
+
+    /**
      * *Запись в лог
      * @param string $message
      * @param array $search
      * @param array $params
      * @return bool
-    */
+     */
     protected function writtingLog(string $message, array $search = [], array $params = []) : bool{
         if(!$this->config['IS_DEBUG']) return false;
         $this->log->write(Str::replace($search, $params, $message));
@@ -60,7 +75,7 @@ abstract class BaseEvent
     /**
      * *Добавление папки в команду git
      * @return string
-    */
+     */
     protected function addGithubFolder() : string{
         return File::exists($this->config['GITHUB_ROOT_FOLDER'])
             ? Str::start(Str::finish($this->config['GITHUB_ROOT_FOLDER'], ' '), ' -C ')
@@ -102,7 +117,7 @@ abstract class BaseEvent
      */
     public function __call(string $name, array $arguments)
     {
-        if(function_exists($name)){
+        if(function_exists($name) && in_array($name, $this->allowMethods)){
             $this->{$name}($arguments);
         }
         else{
@@ -114,7 +129,7 @@ abstract class BaseEvent
      * *Конструктор
      * @param array $server
      * @param array $config
-    */
+     */
     public function __construct(array $server, array $config){
         $this->server = $server;
         $this->config = $config;
@@ -125,7 +140,7 @@ abstract class BaseEvent
      * *Обработка события
      * @param array $data
      * @return bool
-    */
+     */
     public function events(array $data) : bool{
         return false;
     }
@@ -133,7 +148,7 @@ abstract class BaseEvent
     /**
      * *Получения результатов
      * @return array
-    */
+     */
     public function getResult() : array{
         return $this->result;
     }
