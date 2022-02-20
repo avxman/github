@@ -6,14 +6,14 @@ namespace Avxman\Github\Connections;
  *
  * Подклюлчение к удалённому сервису (Гитхаб или Сайт)
  *
-*/
+ */
 abstract class BaseConnection
 {
 
     /**
      * *Статус подключения
      * @var bool $is_connect Валидация пройдена (true) или отклонена (false)
-    */
+     */
     protected bool $is_connect = false;
 
     /**
@@ -41,6 +41,18 @@ abstract class BaseConnection
     protected array $errorMessage = [];
 
     /**
+     * *Установлен git
+     * @return bool
+     */
+    protected function hasGit() : bool{
+        if (!shell_exec('git --version')) {
+            $this->errorMessage[] = "Missing 'git' not install";
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * *Валидация входных данных или проверка на обходимые функции
      * @return bool Валидация пройдена (true) или отклонена (false)
      */
@@ -53,12 +65,12 @@ abstract class BaseConnection
      * @return bool Подключены (true) или Отключены (false)
      */
     protected function connect() : bool{
-        return $this->is_connect = $this->validation();
+        return $this->is_connect = $this->validation() && $this->hasGit();
     }
 
     /**
      * *Конструктор
-    */
+     */
     public function __construct(array $server = [], array $config = []){
         $this->server = $server;
         $this->config = $config;
