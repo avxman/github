@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 class SiteEvent extends BaseEvent
 {
 
-    protected array $allowMethods = ['version', 'pull', 'checkout', 'status', 'log'];
+    protected $allowMethods = ['version', 'pull', 'checkout', 'status', 'log'];
 
     /**
      * *Версия Гитхаба установлена на сайте (хостинг или сервер)

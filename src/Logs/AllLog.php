@@ -18,43 +18,43 @@ class AllLog
      * *Конфигурационные данных
      * @var array $config
     */
-    protected array $config = [];
+    protected $config = [];
 
     /**
      * *Путь к файлу лога
      * @var string $dir
      */
-    protected string $dir = '';
+    protected $dir = '';
 
     /**
      * *Имя файла лога
      * @var string $name
      */
-    protected string $name = 'github.log';
+    protected $name = 'github.log';
 
     /**
      * *Полный путь к файлу лога
      * @var string $full_name
      */
-    protected string $full_name = '';
+    protected $full_name = '';
 
     /**
      * *Максимальный размер файла
      * @var int $size
      */
-    protected int $size = 1024000;
+    protected $size = 1024000;
 
     /**
      * *Работа с ошибками
      * @var GithubMessage $message
      */
-    protected GithubMessage $message;
+    protected $message;
 
     /**
      * Формат даты
      * @var string $date_format
      */
-    protected string $date_format = 'd.m.Y H:i:s';
+    protected $date_format = 'd.m.Y H:i:s';
 
     /**
      * Получаем текущую дату
@@ -66,7 +66,7 @@ class AllLog
 
     /**
      * Проверка на перезапись лога
-     * если файл привышает максимальный размер файла
+     * если файл превышает максимальный размер файла
      * @return bool
      */
     protected function rewrite() : bool{

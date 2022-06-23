@@ -3,8 +3,6 @@
 namespace Avxman\Github\Events;
 
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -16,61 +14,61 @@ use Illuminate\Support\Str;
 class DatabaseEvent extends BaseEvent
 {
 
-    protected array $allowMethods = ['import', 'export', 'backups', 'download'];
+    protected $allowMethods = ['import', 'export', 'backups', 'download'];
 
     /**
      * *Логин к БД
      * @var string $USER
      */
-    protected string $USER = '';
+    protected $USER = '';
 
     /**
      * *Пароль к БД
      * @var string $PASSWORD
      */
-    protected string $PASSWORD = '';
+    protected $PASSWORD = '';
 
     /**
      * *Имя БД
      * @var string $DATABASE
      */
-    protected string $DATABASE = '';
+    protected $DATABASE = '';
 
     /**
      * *Порт к БД
      * @var string $PORT
      */
-    protected string $PORT = '';
+    protected $PORT = '';
 
     /**
      * *Хост к БД
      * @var string $HOST
      */
-    protected string $HOST = '';
+    protected $HOST = '';
 
     /**
      * *Пропускать ошибки при выявлении импорте или экспорте БД
      * @var string $SKIPERROR
      */
-    protected string $SKIPERROR = '';
+    protected $SKIPERROR = '';
 
     /**
      * *Имя файла БД
      * @var string $FILE
      */
-    protected string $FILE = '';
+    protected $FILE = '';
 
     /**
      * *Путь к папки для импорта или экспорта БД
      * @var string $FOLDER
      */
-    protected string $FOLDER = '';
+    protected $FOLDER = '';
 
     /**
      * *Команда для архивирования БД
      * @var string $ZIP
      */
-    protected string $ZIP = '';
+    protected $ZIP = '';
 
     /**
      * *Получение пути к БД для импорта или экспорта
@@ -200,8 +198,8 @@ class DatabaseEvent extends BaseEvent
      * @return void
      */
     protected function download(array $data) : void{
-        if($data['url']??false && !empty($data['url']) && Storage::exists('database/'.$data['url'])){
-            if($data['delete']??false && (bool)$data['delete'] === true){
+        if(($data['url']??false) && !empty($data['url']) && Storage::exists('database/'.$data['url'])){
+            if(($data['delete']??false) && (bool)$data['delete'] === true){
                 if(Storage::delete('database/'.$data['url'])){
                     $this->result = ['type'=>'delete', 'delete'=>true, 'name'=>$data['url']];
                 }

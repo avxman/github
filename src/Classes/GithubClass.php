@@ -3,11 +3,7 @@
 namespace Avxman\Github\Classes;
 
 use Avxman\Github\Connections\BaseConnection;
-use Avxman\Github\Connections\GithubConnection;
-use Avxman\Github\Connections\SiteConnection;
 use Avxman\Github\Events\BaseEvent;
-use Avxman\Github\Events\GithubEvent;
-use Avxman\Github\Events\SiteEvent;
 use Avxman\Github\Messages\GithubMessage;
 
 /**
@@ -21,31 +17,31 @@ abstract class GithubClass{
      * *Конфигурационные данных
      * @var array $config Параметры текущей библиотеки
     */
-    protected array $config = [];
+    protected $config = [];
 
     /**
      * *Конфигурации сервера
      * @var array $server Аналог глобальной перемены $_SERVER
     */
-    protected array $server = [];
+    protected $server = [];
 
     /**
      * *Режим работы, через гитхаб или сайт
      * @var bool $post_is_github Гитхаб (true) / Сайт (false)
     */
-    protected bool $post_is_github = true;
+    protected $post_is_github = true;
 
     /**
      * *Работа с ошибками
      * @var GithubMessage $message Обработчик ошибок
      */
-    protected GithubMessage $message;
+    protected $message;
 
     /**
      * *Результаты
      * @var array $result Конечный результат
     */
-    protected array $result = [];
+    protected $result = [];
 
     /**
      * *Подключение к удаленному адресу

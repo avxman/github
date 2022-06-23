@@ -2,7 +2,6 @@
 
 namespace Avxman\Github\Controllers\Api;
 
-use Avxman\Github\Facades\GithubApiFacade;
 use Avxman\Github\Controllers\GithubApiController;
 use Illuminate\Support\Facades\Response;
 

@@ -4,7 +4,6 @@ namespace Avxman\Github\Controllers\Web;
 
 use Avxman\Github\Controllers\GithubWebController;
 use Avxman\Github\Facades\GithubWebFacade;
-use Illuminate\Support\Facades\Response;
 
 /**
  *
