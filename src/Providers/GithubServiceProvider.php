@@ -28,7 +28,7 @@ class GithubServiceProvider extends ServiceProvider
         }
         else{
             $config = Config()->get('github');
-            if($config['GITHUB_ENABLED']) {
+            if($config['GITHUB_ENABLED']??false) {
                 GithubRoute::allRoutes($config);
             }
         }
