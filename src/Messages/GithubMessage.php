@@ -14,13 +14,13 @@ class GithubMessage
      * Выводить/Не выводить ошибки
      * @var bool $is_debug
     */
-    protected bool $is_debug = false;
+    protected $is_debug = false;
 
     /**
      * Список ошибок
      * @var array $messages
     */
-    protected array $messages = [];
+    protected $messages = [];
 
     /**
      * Шаблон вывода ошибок для Handler

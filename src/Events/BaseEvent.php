@@ -18,37 +18,37 @@ abstract class BaseEvent
      * *Событие существует в виде метода
      * @var bool $is_event
      */
-    public bool $is_event = false;
+    public $is_event = false;
 
     /**
      * *Разрешающие методы
      * @var array $allowMethods
      */
-    protected array $allowMethods = [];
+    protected $allowMethods = [];
 
     /**
      * *Логирование действий
      * @var AllLog $log
      */
-    protected AllLog $log;
+    protected $log;
 
     /**
      * *Конфигурационные данных
      * @var array $config Параметры текущей библиотеки
      */
-    protected array $config = [];
+    protected $config = [];
 
     /**
      * *Конфигурации сервера
      * @var array $server Аналог глобальной перемены $_SERVER
      */
-    protected array $server = [];
+    protected $server = [];
 
     /**
      * *Результат после обработки события
      * @var array $result
      */
-    protected array $result = [];
+    protected $result = [];
 
     /**
      * *Проверка на использование выбранного метода

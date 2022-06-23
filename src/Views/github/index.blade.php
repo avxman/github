@@ -138,7 +138,8 @@
                     @endif
                     @if($result->count())
                         @foreach($result as $message)
-                            @continue($loop->last && empty($message))
+                            @if($loop->last && empty($message))
+                            @else
                             <li class="{{empty($message) ? 'line-space' : 'line-text'}}">
                                 @if($type??false)
                                     @if($type === 'delete')
@@ -153,6 +154,7 @@
                                     {{$message}}
                                 @endif
                             </li>
+                            @endif
                         @endforeach
                     @else
                         <li class="line-text">Результат не найден</li>

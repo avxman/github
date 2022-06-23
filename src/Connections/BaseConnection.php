@@ -14,31 +14,31 @@ abstract class BaseConnection
      * *Статус подключения
      * @var bool $is_connect Валидация пройдена (true) или отклонена (false)
      */
-    protected bool $is_connect = false;
+    protected $is_connect = false;
 
     /**
      * *Данные после валидации
      * @var array $data Список данных после обработки валидации
      */
-    protected array $data = [];
+    protected $data = [];
 
     /**
      * *Конфигурационные данных
      * @var array $config Параметры текущей библиотеки
      */
-    protected array $config = [];
+    protected $config = [];
 
     /**
      * *Конфигурации сервера
      * @var array $server Аналог глобальной перемены $_SERVER
      */
-    protected array $server = [];
+    protected $server = [];
 
     /**
      * *Работа с ошибками
      * @var array $errorMessage Обработчик ошибок
      */
-    protected array $errorMessage = [];
+    protected $errorMessage = [];
 
     /**
      * *Установлен git
@@ -65,7 +65,7 @@ abstract class BaseConnection
      * @return bool Подключены (true) или Отключены (false)
      */
     protected function connect() : bool{
-        return $this->is_connect = $this->validation() && $this->hasGit();
+        return $this->is_connect = ($this->validation() && $this->hasGit());
     }
 
     /**

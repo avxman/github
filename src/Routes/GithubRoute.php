@@ -9,11 +9,9 @@ use Avxman\Github\Controllers\Web\FallbackGithubWebController;
 use Avxman\Github\Controllers\Web\RegistrationGithubWebController;
 use Avxman\Github\Controllers\Web\RepositoryGithubWebController;
 use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 
 /**
@@ -25,28 +23,28 @@ class GithubRoute extends Route
 {
 
     /**
-     * Общяя параметры ссылки
+     * Общие параметры ссылки
      * @var string $uri
     */
-    protected static string $uri = '/{version}/{secret}/';
+    protected static $uri = '/{version}/{secret}/';
 
     /**
      * Префикс для API
      * @var string $prefix_api
     */
-    protected static string $prefix_api = 'api/github';
+    protected static $prefix_api = 'api/github';
 
     /**
      * Префикс для Web
      * @var string $prefix_wep
     */
-    protected static string $prefix_wep = 'web/github';
+    protected static $prefix_wep = 'web/github';
 
     /**
      * Префикс для as метода
      * @var string $as_name
     */
-    protected static string $as_name = 'github.';
+    protected static $as_name = 'github.';
 
     /**
      * Автозапуск вебхука для API
@@ -58,9 +56,9 @@ class GithubRoute extends Route
     }
 
     /**
-     * Установка максимального количества запроса на адрес (защита от перенагрузки)
+     * Установка максимального количества запроса на адрес (защита от досс-атак)
      * @param array $config
-     * @return bool
+     * @return void
      */
     protected static function configureRateLimiting(array $config) : void
     {
@@ -72,7 +70,7 @@ class GithubRoute extends Route
     /**
      * Маршруты для репозитория
      * @param array $config
-     * @return bool
+     * @return void
      */
     protected static function repositoryRoutes(array $config) : void{
         $uri = self::$uri.'{repository}';
@@ -105,7 +103,7 @@ class GithubRoute extends Route
     /**
      * Маршруты для Авторизации пользователя и Регистрации репозитория
      * @param array $config
-     * @return bool
+     * @return void
      */
     protected static function registrationRoutes(array $config) : void{
         $uri = self::$uri.'registration';
@@ -123,7 +121,7 @@ class GithubRoute extends Route
     /**
      * Маршруты для БД
      * @param array $config
-     * @return bool
+     * @return void
      */
     protected static function databaseRoutes(array $config) : void{
         $uri = self::$uri.'database';
@@ -141,7 +139,7 @@ class GithubRoute extends Route
     /**
      * Маршруты для остальных запросов
      * @param array $config
-     * @return bool
+     * @return void
      */
     protected static function fallbackRoutes(array $config) : void{
         self::prefix(self::$prefix_wep)->middleware('api')->as(self::$as_name.'web.')->group(function (){
@@ -157,7 +155,7 @@ class GithubRoute extends Route
     /**
      * Вызов всех маршрутов
      * @param array $config
-     * @return bool
+     * @return void
      */
     public static function allRoutes(array $config) : void{
         self::configureRateLimiting($config);
@@ -165,7 +163,7 @@ class GithubRoute extends Route
         self::databaseRoutes($config);
         self::repositoryRoutes($config);
 
-        // Данный метод должен всегда находится вконце данного метода
+        // Данный метод должен всегда находится в конце данного метода
         self::fallbackRoutes($config);
     }
 

@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 class RegistrationEvent extends BaseEvent
 {
 
-    protected array $allowMethods = ['registration'];
+    protected $allowMethods = ['registration'];
 
     protected function commandGenerate(string $command) : string{
         return $this->command("git{$this->addGithubFolder()}{$command}{$this->commandLineLog()}");
@@ -45,7 +45,7 @@ class RegistrationEvent extends BaseEvent
         $status = $this->commandRaw("ssh -T $email_github");
         $is_auth = Str::contains($status, Str::finish($this->config['GITHUB_REPO_USER'], Str::start($this->config['GITHUB_REPO_NAME'], '/')));
 
-        // Отключаем паралельную индексацию файлов в слабых системах
+        // Отключаем параллельную индексацию файлов в слабых системах
         $this->commandGenerate('config core.preloadIndex false');
 
         if(!$is_auth){

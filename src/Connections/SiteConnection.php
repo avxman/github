@@ -30,17 +30,22 @@ class SiteConnection extends BaseConnection
 
         $type = $this->server['CONTENT_TYPE']??'text/html';
 
-        $json = match ($type) {
-            'application/json' => (array)file_get_contents('php://input'),
-            'application/x-www-form-urlencoded',
-            'text/html' => request()->get('payload'),
-            default => FALSE,
-        };
+        switch ($type){
+            case 'application/json':
+                $json = (array)file_get_contents('php://input');
+                break;
+            case 'application/x-www-form-urlencoded':
+            case 'text/html':
+                $json = request()->get('payload');
+                break;
+            default:
+                $json = FALSE;
+        }
 
         if($json === FALSE || $json === NULL) {
             $this->errorMessage[] = ($json === FALSE
                     ? "Не поддерживается такой тип контента (CONTENT_TYPE): "
-                    : "Не переданы объязательные данные в контенте (CONTENT_TYPE): ")
+                    : "Не переданы обязательные данные в контенте (CONTENT_TYPE): ")
                 .$type;
             $json = [];
         }

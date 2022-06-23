@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 class GithubEvent extends BaseEvent
 {
 
-    protected array $allowMethods = ['default', 'ping', 'push'];
+    protected $allowMethods = ['default', 'ping', 'push'];
 
     /**
      * *Версия Гитхаба установлена на сайте (хостинг или сервер)
