@@ -17,7 +17,7 @@ use Avxman\Github\Classes\GithubClass;
  */
 class GithubWebInstance extends GithubClass{
 
-    protected bool $post_is_github = false;
+    protected $post_is_github = false;
 
 
     public function instance() : void{
