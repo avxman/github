@@ -106,7 +106,7 @@ class DatabaseEvent extends BaseEvent
         $this->HOST = ' -h '.env('DB_HOST', 'localhost');
         $this->SKIPERROR = isset($data['skip_error'])?' -f':'';
         $this->FOLDER = $this->getFolder();
-        $this->FILE = Str::slug(Str::replace(['.', '-'], '_', env('APP_NAME')), '_')
+        $this->FILE = Str::slug(str_replace(['.', '-'], '_', env('APP_NAME')), '_')
             .Carbon::now(Config()->get('app.timezone'))->format('_Y_m_d_H_i_s')
             .'.sql';
         if(isset($data['is_zip'])){
@@ -182,7 +182,7 @@ class DatabaseEvent extends BaseEvent
             foreach ($links as $link){
                 if(!empty($link)){
                     $command['links'][] = [
-                        'url'=>Str::finish($url, Str::start($link, '?payload[event]=download&payload[url]=')),
+                        'url'=>Str::finish($url, Str::finish('?payload[event]=download&payload[url]=', $link)),
                         'name'=>$link
                     ];
                 }

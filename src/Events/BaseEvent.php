@@ -68,7 +68,7 @@ abstract class BaseEvent
      */
     protected function writtingLog(string $message, array $search = [], array $params = []) : bool{
         if(!$this->config['IS_DEBUG']) return false;
-        $this->log->write(Str::replace($search, $params, $message));
+        $this->log->write(str_replace($search, $params, $message));
         return true;
     }
 
@@ -78,7 +78,7 @@ abstract class BaseEvent
      */
     protected function addGithubFolder() : string{
         return File::exists($this->config['GITHUB_ROOT_FOLDER'])
-            ? Str::start(Str::finish($this->config['GITHUB_ROOT_FOLDER'], ' '), ' -C ')
+            ? Str::finish(' -C ', Str::finish($this->config['GITHUB_ROOT_FOLDER'], ' '))
             : ' ';
     }
 

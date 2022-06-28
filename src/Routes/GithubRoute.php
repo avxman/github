@@ -2,15 +2,6 @@
 
 namespace Avxman\Github\Routes;
 
-use Avxman\Github\Controllers\Api\FallbackGithubApiController;
-use Avxman\Github\Controllers\Api\RepositoryGithubApiController;
-use Avxman\Github\Controllers\Web\DatabaseGithubWebController;
-use Avxman\Github\Controllers\Web\FallbackGithubWebController;
-use Avxman\Github\Controllers\Web\RegistrationGithubWebController;
-use Avxman\Github\Controllers\Web\RepositoryGithubWebController;
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
@@ -18,39 +9,39 @@ use Illuminate\Support\Str;
  *
  * Работа с маршрутами
  *
-*/
+ */
 class GithubRoute extends Route
 {
 
     /**
      * Общие параметры ссылки
      * @var string $uri
-    */
+     */
     protected static $uri = '/{version}/{secret}/';
 
     /**
      * Префикс для API
      * @var string $prefix_api
-    */
+     */
     protected static $prefix_api = 'api/github';
 
     /**
      * Префикс для Web
      * @var string $prefix_wep
-    */
+     */
     protected static $prefix_wep = 'web/github';
 
     /**
      * Префикс для as метода
      * @var string $as_name
-    */
+     */
     protected static $as_name = 'github.';
 
     /**
      * Автозапуск вебхука для API
      * @param array $config
      * @return bool
-    */
+     */
     protected static function autoloadFromWebhook(array $config) : bool{
         return (bool)$config['GITHUB_AUTO_WEBHOOK'];
     }
@@ -62,9 +53,7 @@ class GithubRoute extends Route
      */
     protected static function configureRateLimiting(array $config) : void
     {
-        RateLimiter::for('api', function (Request $request) use ($config) {
-            return Limit::perMinute($config['GITHUB_MAX_RATE'])->by(optional($request->user())->id ?: $request->ip());
-        });
+
     }
 
     /**
@@ -77,27 +66,33 @@ class GithubRoute extends Route
         $wheres = [
             'version'=>$config['GITHUB_API_VERSION'],
             'secret'=>$config['GITHUB_TOKEN'],
-            'repository'=>Str::finish($config['GITHUB_REPO_USER'], Str::start($config['GITHUB_REPO_NAME'], '@')),
+            'repository'=>Str::finish($config['GITHUB_REPO_USER'], Str::finish('@', $config['GITHUB_REPO_NAME'])),
         ];
-        self::prefix(self::$prefix_wep)->middleware('api')->as(self::$as_name.'web.')->group(function () use ($config, $wheres, $uri){
-            self::any($uri, [RepositoryGithubWebController::class, 'index'])
-                ->name('repository')
-                ->setWheres($wheres);
+
+        self::group(['prefix'=>self::$prefix_wep, 'as'=>self::$as_name.'web.'], function() use ($wheres, $uri){
+            self::group(['where'=>$wheres], function () use ($uri){
+                self::any($uri, 'Avxman\Github\Controllers\Web\RepositoryGithubWebController@index')
+                    ->name('repository');
+            });
         });
+
         if(self::autoloadFromWebhook($config)) {
-            self::prefix(self::$prefix_api)->middleware('api')->as(self::$as_name.'api.')->group(function () use ($config, $wheres, $uri) {
-                self::any($uri, [RepositoryGithubApiController::class, 'index'])
-                    ->name('repository')
-                    ->setWheres($wheres);
+            self::group(['prefix' => self::$prefix_api, 'as' => self::$as_name . 'api.'], function () use ($wheres, $uri) {
+                self::group(['where' => $wheres], function () use ($uri) {
+                    self::any($uri, 'Avxman\Github\Controllers\Api\RepositoryGithubApiController@index')
+                        ->name('repository');
+                });
             });
         }
         else{
-            self::prefix(self::$prefix_api)->middleware('api')->as(self::$as_name.'api.')->group(function () use ($config, $wheres, $uri) {
-                self::any($uri, [FallbackGithubApiController::class, 'index'])
-                    ->name('repository')
-                    ->setWheres($wheres);
+            self::group(['prefix' => self::$prefix_api, 'as' => self::$as_name . 'api.'], function () use ($wheres, $uri) {
+                self::group(['where' => $wheres], function () use ($uri) {
+                    self::any($uri, 'Avxman\Github\Controllers\Api\FallbackGithubApiController@index')
+                        ->name('repository');
+                });
             });
         }
+
     }
 
     /**
@@ -111,10 +106,11 @@ class GithubRoute extends Route
             'version'=>$config['GITHUB_API_VERSION'],
             'secret'=>$config['GITHUB_TOKEN'],
         ];
-        self::prefix(self::$prefix_wep)->middleware('api')->as(self::$as_name.'web.')->group(function () use ($config, $wheres, $uri){
-            self::any($uri, [RegistrationGithubWebController::class, 'index'])
-                ->name('registration')
-                ->setWheres($wheres);
+        self::group(['prefix'=>self::$prefix_wep, 'as'=>self::$as_name.'web.'], function() use ($wheres, $uri){
+            self::group(['where'=>$wheres], function () use ($uri){
+                self::any($uri, 'Avxman\Github\Controllers\Web\RegistrationGithubWebController@index')
+                    ->name('registration');
+            });
         });
     }
 
@@ -129,10 +125,11 @@ class GithubRoute extends Route
             'version'=>$config['GITHUB_API_VERSION'],
             'secret'=>$config['GITHUB_TOKEN'],
         ];
-        self::prefix(self::$prefix_wep)->middleware('api')->as(self::$as_name.'web.')->group(function () use ($config, $wheres, $uri){
-            self::any($uri, [DatabaseGithubWebController::class, 'index'])
-                ->name('database')
-                ->setWheres($wheres);
+        self::group(['prefix'=>self::$prefix_wep, 'as'=>self::$as_name.'web.'], function() use ($wheres, $uri){
+            self::group(['where'=>$wheres], function () use ($uri){
+                self::any($uri, 'Avxman\Github\Controllers\Web\DatabaseGithubWebController@index')
+                    ->name('database');
+            });
         });
     }
 
@@ -142,12 +139,12 @@ class GithubRoute extends Route
      * @return void
      */
     protected static function fallbackRoutes(array $config) : void{
-        self::prefix(self::$prefix_wep)->middleware('api')->as(self::$as_name.'web.')->group(function (){
-            self::fallback([FallbackGithubWebController::class, 'index'])
+        self::group(['prefix'=>self::$prefix_wep, 'as'=>self::$as_name.'web.'], function(){
+            self::any('/{page?}', 'Avxman\Github\Controllers\Web\FallbackGithubWebController@index')
                 ->name('notFound');
         });
-        self::prefix(self::$prefix_api)->middleware('api')->as(self::$as_name.'api.')->group(function (){
-            self::fallback([FallbackGithubApiController::class, 'index'])
+        self::group(['prefix'=>self::$prefix_api, 'as'=>self::$as_name.'api.'], function(){
+            self::any('/{page?}', 'Avxman\Github\Controllers\Api\FallbackGithubApiController@index')
                 ->name('notFound');
         });
     }

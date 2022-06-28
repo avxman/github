@@ -43,7 +43,7 @@ class RegistrationEvent extends BaseEvent
 
         // Проверка на права записи через ssh ключ
         $status = $this->commandRaw("ssh -T $email_github");
-        $is_auth = Str::contains($status, Str::finish($this->config['GITHUB_REPO_USER'], Str::start($this->config['GITHUB_REPO_NAME'], '/')));
+        $is_auth = Str::contains($status, Str::finish($this->config['GITHUB_REPO_USER'], Str::finish('/', $this->config['GITHUB_REPO_NAME'])));
 
         // Отключаем параллельную индексацию файлов в слабых системах
         $this->commandGenerate('config core.preloadIndex false');
@@ -69,7 +69,7 @@ class RegistrationEvent extends BaseEvent
             $ssh_keygen = $this->commandRaw("ssh-keygen -f $path_private -C '$email_github' -t rsa -b 2048 -P '' -N ''");
 
             // Читаем ssh ключ и выводим текст для ввода в github
-            if(Str::contains($ssh_keygen, Str::replaceFirst('~', '', $path_private))){
+            if(Str::contains($ssh_keygen, str_replace('~', '', $path_private))){
                 // Добавляем новый ssh ключ в систему
                 $ssh_add = $this->commandRaw("ssh-copy-id -i $path_private $email_github");
                 if(!Str::contains(Str::lower($ssh_add), 'error')){
@@ -106,7 +106,7 @@ class RegistrationEvent extends BaseEvent
                     }
                 }
                 else{
-                    $message = "Не удалось добавить ssh ключ в систему: ".Str::afterLast($ssh_add, 'ERROR');
+                    $message = "Не удалось добавить ssh ключ в систему: ".str_replace('/^(.*)ERROR(.*)$/', '$2', $ssh_add);
                 }
             }
             else{$message = "Не удалось создать ssh ключ";}
