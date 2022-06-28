@@ -70,26 +70,23 @@ class GithubRoute extends Route
         ];
 
         self::group(['prefix'=>self::$prefix_wep, 'as'=>self::$as_name.'web.'], function() use ($wheres, $uri){
-            self::group(['where'=>$wheres], function () use ($uri){
-                self::any($uri, 'Avxman\Github\Controllers\Web\RepositoryGithubWebController@index')
-                    ->name('repository');
-            });
+            self::any($uri, 'Avxman\Github\Controllers\Web\RepositoryGithubWebController@index')
+                ->name('repository')
+                ->where($wheres);
         });
 
         if(self::autoloadFromWebhook($config)) {
             self::group(['prefix' => self::$prefix_api, 'as' => self::$as_name . 'api.'], function () use ($wheres, $uri) {
-                self::group(['where' => $wheres], function () use ($uri) {
-                    self::any($uri, 'Avxman\Github\Controllers\Api\RepositoryGithubApiController@index')
-                        ->name('repository');
-                });
+                self::any($uri, 'Avxman\Github\Controllers\Api\RepositoryGithubApiController@index')
+                    ->name('repository')
+                    ->where($wheres);
             });
         }
         else{
             self::group(['prefix' => self::$prefix_api, 'as' => self::$as_name . 'api.'], function () use ($wheres, $uri) {
-                self::group(['where' => $wheres], function () use ($uri) {
-                    self::any($uri, 'Avxman\Github\Controllers\Api\FallbackGithubApiController@index')
-                        ->name('repository');
-                });
+                self::any($uri, 'Avxman\Github\Controllers\Api\FallbackGithubApiController@index')
+                    ->name('repository')
+                    ->where($wheres);
             });
         }
 
@@ -107,10 +104,9 @@ class GithubRoute extends Route
             'secret'=>$config['GITHUB_TOKEN'],
         ];
         self::group(['prefix'=>self::$prefix_wep, 'as'=>self::$as_name.'web.'], function() use ($wheres, $uri){
-            self::group(['where'=>$wheres], function () use ($uri){
-                self::any($uri, 'Avxman\Github\Controllers\Web\RegistrationGithubWebController@index')
-                    ->name('registration');
-            });
+            self::any($uri, 'Avxman\Github\Controllers\Web\RegistrationGithubWebController@index')
+                ->name('registration')
+                ->where($wheres);
         });
     }
 
@@ -126,10 +122,9 @@ class GithubRoute extends Route
             'secret'=>$config['GITHUB_TOKEN'],
         ];
         self::group(['prefix'=>self::$prefix_wep, 'as'=>self::$as_name.'web.'], function() use ($wheres, $uri){
-            self::group(['where'=>$wheres], function () use ($uri){
-                self::any($uri, 'Avxman\Github\Controllers\Web\DatabaseGithubWebController@index')
-                    ->name('database');
-            });
+            self::any($uri, 'Avxman\Github\Controllers\Web\DatabaseGithubWebController@index')
+                ->name('database')
+                ->where($wheres);
         });
     }
 
