@@ -140,11 +140,11 @@ class GithubRoute extends Route
      */
     protected static function fallbackRoutes(array $config) : void{
         self::group(['prefix'=>self::$prefix_wep, 'as'=>self::$as_name.'web.'], function(){
-            self::any('/{page?}', 'Avxman\Github\Controllers\Web\FallbackGithubWebController@index')
+            self::any('/{page?}/{page2?}', 'Avxman\Github\Controllers\Web\FallbackGithubWebController@index')
                 ->name('notFound');
         });
         self::group(['prefix'=>self::$prefix_api, 'as'=>self::$as_name.'api.'], function(){
-            self::any('/{page?}', 'Avxman\Github\Controllers\Api\FallbackGithubApiController@index')
+            self::any('/{page?}/{page2?}', 'Avxman\Github\Controllers\Api\FallbackGithubApiController@index')
                 ->name('notFound');
         });
     }
