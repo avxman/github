@@ -1,15 +1,4 @@
-`https://github.loc/web/github/v1/{secret-token}/{repository}?payload[event]=pull`
+# Документация библиотеки:
 
-`~/.ssh/config`
-
-`git config core.preloadIndex false`
-
-```shell
-Host github github.com
-    HostName github.com
-    User user # указываем имя пользователя в ОС, в основном это имя узнать через фтп
-    IdentityFile ~/.ssh/name_repository # указывать закрытый (private) ключ
-```
-```text
-
-```
+* ## 1. [PHP 7.* и Laravel 5.*](https://github.com/avxman/github/tree/7.2)
+* ## 2. [PHP 8.* и Laravel 8.*](https://github.com/avxman/github/tree/8.0)
