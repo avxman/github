@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Response;
 
 /**
  *
- * Контроллер по работе c Активацией Гитхаба и Сайта через Web (Сайт)
+ * Контроллер по работе по Активации Гитхаба и Сайта через Web (Сайт)
  *
 */
 class RegistrationGithubWebController extends GithubWebController

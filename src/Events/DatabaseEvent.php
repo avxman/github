@@ -61,7 +61,7 @@ class DatabaseEvent extends BaseEvent
     protected string $FILE = '';
 
     /**
-     * *Путь к папки для импорта или экспорта БД
+     * *Путь к папкам для импорта или экспорта БД
      * @var string $FOLDER
      */
     protected string $FOLDER = '';
@@ -132,6 +132,7 @@ class DatabaseEvent extends BaseEvent
      * Импорт БД
      * @param array $data
      * @return void
+     * @throws \ErrorException
      */
     protected function import(array $data): void{
         //$this->commandRaw("mysqldump{$this->USER}{$this->PASSWORD}{$this->HOST}{$this->PORT}{$this->DATABASE} < {$this->FOLDER}/{$this->FILE}", true);
@@ -148,6 +149,7 @@ class DatabaseEvent extends BaseEvent
      * Экспорт БД
      * @param array $data
      * @return void
+     * @throws \ErrorException
      */
     protected function export(array $data): void{
         $connecntion = $this->commandRaw("mysqldump{$this->USER}{$this->PASSWORD}{$this->HOST}{$this->PORT}{$this->DATABASE} -V", false);
@@ -170,6 +172,7 @@ class DatabaseEvent extends BaseEvent
      * Список всех бэкапов БД
      * @param array $data
      * @return void
+     * @throws \ErrorException
      */
     protected function backups(array $data) : void{
         $command = $this->commandRaw("ls {$this->FOLDER}");
@@ -198,10 +201,11 @@ class DatabaseEvent extends BaseEvent
      * Скачивание БД
      * @param array $data
      * @return void
+     * @throws \ErrorException
      */
     protected function download(array $data) : void{
-        if($data['url']??false && !empty($data['url']) && Storage::exists('database/'.$data['url'])){
-            if($data['delete']??false && (bool)$data['delete'] === true){
+        if(($data['url']??false) && !empty($data['url']) && Storage::exists('database/'.$data['url'])){
+            if(($data['delete']??false) && (bool)$data['delete'] === true){
                 if(Storage::delete('database/'.$data['url'])){
                     $this->result = ['type'=>'delete', 'delete'=>true, 'name'=>$data['url']];
                 }

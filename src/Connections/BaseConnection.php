@@ -4,7 +4,7 @@ namespace Avxman\Github\Connections;
 
 /**
  *
- * Подклюлчение к удалённому сервису (Гитхаб или Сайт)
+ * Подключение к удалённому сервису (Гитхаб или Сайт)
  *
  */
 abstract class BaseConnection

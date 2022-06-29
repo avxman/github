@@ -65,6 +65,7 @@ abstract class BaseEvent
      * @param array $search
      * @param array $params
      * @return bool
+     * @throws \ErrorException
      */
     protected function writtingLog(string $message, array $search = [], array $params = []) : bool{
         if(!$this->config['IS_DEBUG']) return false;

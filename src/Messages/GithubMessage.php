@@ -73,8 +73,6 @@ class GithubMessage
         header('Content-Type: text/html; charset=utf-8');
         echo $this->themeException($e->getMessage());
         exit;
-        // header('Content-Type: application/json; charset=utf-8');
-        // echo json_encode(["error"=>"Server Error:<br>".$e->getMessage()]);
     }
 
     /**

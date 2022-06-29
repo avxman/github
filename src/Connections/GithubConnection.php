@@ -76,7 +76,7 @@ class GithubConnection extends BaseConnection
         if($json === FALSE || $json === NULL) {
             $this->errorMessage[] = ($json === FALSE
                     ? "Не поддерживается такой тип контента (CONTENT_TYPE): "
-                    : "Не переданы объязательные данные в контенте (CONTENT_TYPE): ")
+                    : "Не переданы обязательные данные в контенте (CONTENT_TYPE): ")
                 .$type;
             $json = json_encode((object)[]);
         }

@@ -33,6 +33,7 @@ class RegistrationEvent extends BaseEvent
      * Авторизируем пользователя и регистрируем репозиторий
      * @param array $data
      * @return void
+     * @throws \ErrorException
      */
     protected function registration(array $data) : void{
         // Инициализация параметров
@@ -45,7 +46,7 @@ class RegistrationEvent extends BaseEvent
         $status = $this->commandRaw("ssh -T $email_github");
         $is_auth = Str::contains($status, Str::finish($this->config['GITHUB_REPO_USER'], Str::start($this->config['GITHUB_REPO_NAME'], '/')));
 
-        // Отключаем паралельную индексацию файлов в слабых системах
+        // Отключаем параллельную индексацию файлов в слабых системах
         $this->commandGenerate('config core.preloadIndex false');
 
         if(!$is_auth){
@@ -118,7 +119,7 @@ class RegistrationEvent extends BaseEvent
         else{
             $ssh_file = $this->commandRaw("cat $path_public");
             if(Str::contains(Str::lower($ssh_file), 'no such file')){
-                $message = "Указаный файл с ключём не найден : ( $path_public ) нужно смотреть более детально через консольную панель";
+                $message = "Указанный файл с клюём не найден : ( $path_public ) нужно смотреть более детально через консольную панель";
             }
             else{
                 $message = "Публичный ключ находится в файле: $path_public";

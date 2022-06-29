@@ -3,7 +3,7 @@
 namespace Avxman\Github\Connections;
 
 /**
- * Подключения для работы с Базай Данных
+ * Подключения для работы с Базой Данных
 */
 class DatabaseConnection extends SiteConnection
 {

@@ -18,6 +18,7 @@ class GithubEvent extends BaseEvent
      * *Версия Гитхаба установлена на сайте (хостинг или сервер)
      * @param array $data
      * @return void
+     * @throws \ErrorException
      */
     protected function default(array $data) : void{
         $command = $this->commandGenerate('--version');
@@ -32,6 +33,7 @@ class GithubEvent extends BaseEvent
      * *Проверка соединения с Гитхаб репозиторием
      * @param array $data
      * @return void
+     * @throws \ErrorException
      */
     protected function ping(array $data) : void{
         $this->writtingLog(
@@ -45,6 +47,7 @@ class GithubEvent extends BaseEvent
      * *Обновления сайта из Гитхаба
      * @param array $data
      * @return void
+     * @throws \ErrorException
      */
     protected function push(array $data) : void{
         $command = $this->commandGenerate('pull');

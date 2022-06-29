@@ -66,7 +66,7 @@ class AllLog
 
     /**
      * Проверка на перезапись лога
-     * если файл привышает максимальный размер файла
+     * если файл превышает максимальный размер файла
      * @return bool
      */
     protected function rewrite() : bool{
@@ -90,6 +90,7 @@ class AllLog
      * Записываем данные в файл лога
      * @param string $text
      * @return void
+     * @throws \ErrorException
      */
     public function write(string $text) : void{
         $text = $this->getDate().': '.$text.PHP_EOL;
@@ -102,6 +103,7 @@ class AllLog
     /**
      * Считываем данные из файла лога
      * @return string
+     * @throws \ErrorException
      */
     public function read() : string{
         if(empty($file = File::get($this->full_name))){

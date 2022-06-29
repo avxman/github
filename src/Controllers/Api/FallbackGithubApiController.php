@@ -2,14 +2,13 @@
 
 namespace Avxman\Github\Controllers\Api;
 
-use Avxman\Github\Facades\GithubApiFacade;
 use Avxman\Github\Controllers\GithubApiController;
 use Illuminate\Support\Facades\Response;
 
 /**
  *
  * Контроллер по работе со всеми запросами
- * не обявленных в машрутах через API
+ * не объявленных в маршрутах через API
  *
 */
 class FallbackGithubApiController extends GithubApiController

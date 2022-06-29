@@ -3,11 +3,7 @@
 namespace Avxman\Github\Classes;
 
 use Avxman\Github\Connections\BaseConnection;
-use Avxman\Github\Connections\GithubConnection;
-use Avxman\Github\Connections\SiteConnection;
 use Avxman\Github\Events\BaseEvent;
-use Avxman\Github\Events\GithubEvent;
-use Avxman\Github\Events\SiteEvent;
 use Avxman\Github\Messages\GithubMessage;
 
 /**
@@ -51,10 +47,11 @@ abstract class GithubClass{
      * *Подключение к удаленному адресу
      * @param BaseConnection $instance тип подключения (Гидхаб или Сайт)
      * @return void без возврата данных
-    */
+     * @throws \ErrorException
+     */
     protected function connection(BaseConnection $instance) : void{
         if(!$instance->isConnect()){
-            $messages = array_merge(['Не удалось соеденится с адресом'], $instance->errorMessage());
+            $messages = array_merge(['Не удалось соединится с адресом'], $instance->errorMessage());
             $this->message->setMessages($messages)->errors();
         }
     }
@@ -62,7 +59,8 @@ abstract class GithubClass{
     /**
      * *Обработка данных
      * @param BaseConnection $instance тип подключения (Гидхаб или Сайт)
-     * @return array список данных полученых после валидации
+     * @return array список данных полученных после валидации
+     * @throws \ErrorException
      */
     protected function data(BaseConnection $instance) : array{
         if (!count($result = $instance->getData())){

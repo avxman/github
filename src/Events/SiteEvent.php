@@ -18,6 +18,7 @@ class SiteEvent extends BaseEvent
      * *Версия Гитхаба установлена на сайте (хостинг или сервер)
      * @param array $data
      * @return void
+     * @throws \ErrorException
      */
     protected function version(array $data = []) : void{
         $command = $this->commandGenerate("--version");
@@ -33,6 +34,7 @@ class SiteEvent extends BaseEvent
      * *Обновления сайта из Гитхаба
      * @param array $data
      * @return void
+     * @throws \ErrorException
      */
     protected function pull(array $data) : void{
         $command = $this->commandGenerate("pull");
@@ -59,6 +61,7 @@ class SiteEvent extends BaseEvent
      * *Переключение веток
      * @param array $data
      * @return void
+     * @throws \ErrorException
      */
     protected function checkout(array $data) : void{
         $command = $this->commandGenerate("checkout {$data['branch']}");
@@ -74,6 +77,7 @@ class SiteEvent extends BaseEvent
      * *Проверка статуса
      * @param array $data
      * @return void
+     * @throws \ErrorException
      */
     protected function status(array $data) : void{
         $command = $this->commandGenerate("status");
@@ -89,6 +93,7 @@ class SiteEvent extends BaseEvent
      * *Показать последние логи
      * @param array $data
      * @return void
+     * @throws \ErrorException
      */
     protected function log(array $data) : void{
         $count = $data['count']??10;

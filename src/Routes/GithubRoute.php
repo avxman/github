@@ -60,7 +60,7 @@ class GithubRoute extends Route
     /**
      * Установка максимального количества запроса на адрес (защита от перенагрузки)
      * @param array $config
-     * @return bool
+     * @return void
      */
     protected static function configureRateLimiting(array $config) : void
     {
@@ -72,10 +72,10 @@ class GithubRoute extends Route
     /**
      * Маршруты для репозитория
      * @param array $config
-     * @return bool
+     * @return void
      */
     protected static function repositoryRoutes(array $config) : void{
-        $uri = self::$uri.'{repository}';
+        $uri = self::$uri.'{repository}/repository';
         $wheres = [
             'version'=>$config['GITHUB_API_VERSION'],
             'secret'=>$config['GITHUB_TOKEN'],
@@ -105,7 +105,7 @@ class GithubRoute extends Route
     /**
      * Маршруты для Авторизации пользователя и Регистрации репозитория
      * @param array $config
-     * @return bool
+     * @return void
      */
     protected static function registrationRoutes(array $config) : void{
         $uri = self::$uri.'registration';
@@ -123,7 +123,7 @@ class GithubRoute extends Route
     /**
      * Маршруты для БД
      * @param array $config
-     * @return bool
+     * @return void
      */
     protected static function databaseRoutes(array $config) : void{
         $uri = self::$uri.'database';
@@ -141,7 +141,7 @@ class GithubRoute extends Route
     /**
      * Маршруты для остальных запросов
      * @param array $config
-     * @return bool
+     * @return void
      */
     protected static function fallbackRoutes(array $config) : void{
         self::prefix(self::$prefix_wep)->middleware('api')->as(self::$as_name.'web.')->group(function (){
@@ -157,7 +157,7 @@ class GithubRoute extends Route
     /**
      * Вызов всех маршрутов
      * @param array $config
-     * @return bool
+     * @return void
      */
     public static function allRoutes(array $config) : void{
         self::configureRateLimiting($config);
@@ -165,7 +165,7 @@ class GithubRoute extends Route
         self::databaseRoutes($config);
         self::repositoryRoutes($config);
 
-        // Данный метод должен всегда находится вконце данного метода
+        // Данный метод должен всегда находится в конце данного метода
         self::fallbackRoutes($config);
     }
 
