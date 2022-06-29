@@ -138,7 +138,7 @@
                     @endif
                     @if($result->count())
                         @foreach($result as $message)
-                            @if($loop->last && empty($message))
+                            @if($k >= $result->count()-1 && empty($message))
                             @else
                             <li class="{{empty($message) ? 'line-space' : 'line-text'}}">
                                 @if($type??false)

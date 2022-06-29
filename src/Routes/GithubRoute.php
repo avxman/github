@@ -62,7 +62,7 @@ class GithubRoute extends Route
      * @return void
      */
     protected static function repositoryRoutes(array $config) : void{
-        $uri = self::$uri.'{repository}';
+        $uri = self::$uri.'{repository}/repository';
         $wheres = [
             'version'=>$config['GITHUB_API_VERSION'],
             'secret'=>$config['GITHUB_TOKEN'],

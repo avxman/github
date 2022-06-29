@@ -3,7 +3,7 @@
 namespace Avxman\Github\Logs;
 
 use Avxman\Github\Messages\GithubMessage;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 
 /**

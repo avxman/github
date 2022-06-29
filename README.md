@@ -1,8 +1,7 @@
 ## PHP 7.* and Laravel 5.*
-##### Открыть консольную комманду, перейти в корневую папку проекта и запустить набрав комманду
+##### Открыть консольную команду, перейти в корневую папку проекта и запустить набрав комманду
 ```composer
 composer require avxman/github
-php artisan vendor:publish --tag=avxman-github-all
 composer dump-autoload
 ```
 ##### Добавить в config/app.php
@@ -15,6 +14,10 @@ composer dump-autoload
     ...
     'Github'=>Avxman\Github\Facades\GithubFacade::class
 ]
+```
+##### Запустить команду
+```composer
+php artisan vendor:publish --tag=avxman-github-all
 ```
 ##### Добавить в app/Http/routes.php ближе к первым строкам
 ```text
