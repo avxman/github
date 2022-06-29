@@ -2,7 +2,7 @@
 
 namespace Avxman\Github\Events;
 
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -78,7 +78,7 @@ class DatabaseEvent extends BaseEvent
         if(!Storage::exists('database')){
             Storage::makeDirectory('database');
         }
-        $folder = Storage::path('database');
+        $folder = storage_path('app/database');
         $this->getGitignore();
         return $folder;
     }
@@ -178,12 +178,12 @@ class DatabaseEvent extends BaseEvent
         );
         if(!empty($command) && ($links = explode(PHP_EOL, $command))){
             $url = request()->url();
-            $command = ['type'=>'backups', 'links'=>[]];
-            foreach ($links as $link){
-                if(!empty($link)){
+            $command = ['type' => 'backups', 'links' => []];
+            foreach ($links as $link) {
+                if (!empty($link)) {
                     $command['links'][] = [
-                        'url'=>Str::finish($url, Str::finish('?payload[event]=download&payload[url]=', $link)),
-                        'name'=>$link
+                        'url' => Str::finish($url, Str::finish('?payload[event]=download&payload[url]=', $link)),
+                        'name' => $link
                     ];
                 }
             }
