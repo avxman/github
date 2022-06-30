@@ -137,7 +137,7 @@
                         <li class="title-download">Список Баз Данных</li>
                     @endif
                     @if($result->count())
-                        @foreach($result as $message)
+                        @foreach($result as $k => $message)
                             @if($k >= $result->count()-1 && empty($message))
                             @else
                             <li class="{{empty($message) ? 'line-space' : 'line-text'}}">
