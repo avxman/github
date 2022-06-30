@@ -87,8 +87,13 @@ class RegistrationEvent extends BaseEvent
                     else{
                         $config_ssh_file = $this->commandRaw("cat $config_ssh");
                         if(Str::contains(Str::lower($config_ssh_file), Str::lower('Host github.com'))){
+                            $ssh_file = $this->commandRaw("cat $path_public");
                             $message = "В конфигурационном файле config уже найден Host github.com." .PHP_EOL
-                                ."Чтобы изменить файл нужно сделать это вручную";
+                                ."Чтобы изменить файл нужно сделать это вручную"
+                                .(Str::contains($ssh_file, 'ssh-rsa')
+                                    ? PHP_EOL."Скопировать нижеуказанный текст и вставить в github репозитория:".PHP_EOL.PHP_EOL.$ssh_file.PHP_EOL
+                                    :''
+                                );
                             $config_ssh_next = false;
                         }
                         else{
