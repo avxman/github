@@ -26,7 +26,9 @@ GITHUB_REPO_NAME=repository
 #Путь репозитория (проекта) в Github.com или Gitlab.com
 GITHUB_REPO=user/repository
 #Url адрес репозитория (проекта)
-GITHUB_REPO_URL=https://github.com/user/repository
+#Если проект приватный, нужну использовать ссылку по ssh
+#git@github.com:user/repository.git
+GITHUB_REPO_URL=https://github.com/avxman/github.git
 ```
 
 ##### 4. На локальной машине инициализируйте свой проект перейдя в корневую папку проекта и с помощью git запустите команду
