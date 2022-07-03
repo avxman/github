@@ -3,7 +3,7 @@
     "description": "The module github",
     "homepage": "https://github.com/avxman/github",
     "notification-url": "https://packagist.org/downloads/",
-    "version": "2.0.5",
+    "version": "2.0.6",
     "type": "library",
     "license": "MIT",
     "authors": [

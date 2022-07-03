@@ -127,7 +127,12 @@ class RegistrationEvent extends BaseEvent
                 $message = "Указанный файл с ключом не найден : ( $path_public ) нужно смотреть более детально через консольную панель";
             }
             else{
-                $message = "Публичный ключ находится в файле: $path_public";
+                $message = "Публичный ключ находится в файле: $path_public"
+                    .PHP_EOL
+                    .(Str::contains($ssh_file, 'ssh-rsa')
+                        ? PHP_EOL."Скопировать нижеуказанный текст и вставить в github репозитория:".PHP_EOL.PHP_EOL.$ssh_file.PHP_EOL
+                        :''
+                    );;
             }
 
             // Результат
