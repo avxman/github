@@ -66,7 +66,7 @@ class RegistrationEvent extends BaseEvent
             }
 
             // Генерируем ssh ключ
-            $ssh_keygen = $this->commandRaw("ssh-keygen -f $path_private -C '$email_github' -t rsa -b 2048 -P '' -N ''");
+            $ssh_keygen = $this->commandRaw("ssh-keygen -f $path_private -C '$email_github' -t rsa -b 4096 -P '' -N ''");
 
             // Читаем ssh ключ и выводим текст для ввода в github
             if(Str::contains($ssh_keygen, str_replace('~', '', $path_private))){
@@ -123,7 +123,7 @@ class RegistrationEvent extends BaseEvent
         else{
             $ssh_file = $this->commandRaw("cat $path_public");
             if(Str::contains(Str::lower($ssh_file), 'no such file')){
-                $message = "Указаный файл с ключём не найден : ( $path_public ) нужно смотреть более детально через консольную панель";
+                $message = "Указанный файл с ключом не найден : ( $path_public ) нужно смотреть более детально через консольную панель";
             }
             else{
                 $message = "Публичный ключ находится в файле: $path_public";
