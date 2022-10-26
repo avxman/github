@@ -38,7 +38,7 @@ GITHUB_ENABLED=true
 GITHUB_TOKEN=your_custom_token
 #сектретный ключ в настройках репозитория в Github.com или Gitlab.com,
 #набор символов состоящих из [0-9A-Za-z] не менее 32 символов
-HTTP_X_GITHUB_SECRET=your_secret_from_github_deploy
+GITHUB_SECRET=your_secret_from_github_deploy
 #имя пользователя, который создаст репозиторий в Github.com или Gitlab.com
 GITHUB_REPO_USER=user
 #имя репозитория (проекта), который создаст пользователь Github.com или Gitlab.com
