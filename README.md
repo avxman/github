@@ -127,6 +127,14 @@ https://your_domain/web/github/GITHUB_API_VERSION/GITHUB_TOKEN/GITHUB_REPO_USER@
 ```
 
 ### Заметка
-Бывает при переключении веток сайт не соотвествует версии ветки. Причина может быть, из-за отсутствии последних изменений версии из репозитория github (gitlab).
-Решает проблему комманда запуска обновления репозитория (проекта) из Github (Gitlab) с помощью адресной строки
+#### Переключение ветки сайта не соотвествует версии ветки из Github (Gitlab)
+Причина может быть, из-за отсутствии последних изменений версии из репозитория github (gitlab).
+Решает проблему команда запуска обновления репозитория (проекта) из Github (Gitlab) с помощью адресной строки
 ``https://your_domain/web/github/GITHUB_API_VERSION/GITHUB_TOKEN/GITHUB_REPO_USER@GITHUB_REPO_NAME/repository?payload[event]=pull``
+#### Не получается скопировать или отправить изменения проекта на Github (Gitlab)
+На Github (Gitlab) в настройке проекта (репозитория) установлен параметр видимости как "приватный (private)". В связи с этим,
+требуется настроить доступ к проекту (репозиторию). Существует несколько способов:
+- В настройках проекта во вкладке Deploy keys - добавить ssh ключ локальной машины и выбрав галочку "Allow write access"
+- Использовать "Personal access tokens" из настроек аккаунта Github (Gitlab). В параметре "Select scopes" установить галочки: gist, read:org, repo, workflow. При копировании проекта указываем путь: https://personal_access_token@github.com/name_user_or_name_organization/name_repository. При ошибки команды `git push` или похожих команд, нужно в файле /.git/config текущего проекта заменить ключ `url = ...` на `url = https://personal_access_token@github.com/name_user_or_name_organization/name_repository`
+
+
