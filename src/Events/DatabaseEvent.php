@@ -2,7 +2,7 @@
 
 namespace Avxman\Github\Events;
 
-use Carbon\Carbon;;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -208,7 +208,8 @@ class DatabaseEvent extends BaseEvent
                 }
             }
             else{
-                $this->result = ['type'=>'download', 'url'=>Storage::download('database/'.$data['url'])];
+                // TODO для данной версии скачать файл БД напрямую запрещено
+                //$this->result = ['type'=>'download', 'url'=>Storage::download('database/'.$data['url'])];
             }
             $this->writtingLog(
                 'DatabaseEvent: %1, result: %2',
