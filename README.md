@@ -1,6 +1,6 @@
 ## PHP 7.* and Laravel 5.*
 
-### Добавление библиотеки в проект
+### Добавляем библиотку в проект
 
 ##### 1. Открываем консольную команду, переходим в корневую папку проекта и запускаем комманду
 ```composer
@@ -32,6 +32,7 @@ php artisan vendor:publish --tag=avxman-github-all
 ##### 5. Добавляем и настраиваем параметры в .env
 ```dotenv
 #Github
+#включить работу Github
 GITHUB_ENABLED=true
 #хеш (api) ключ добавляется в адресную строку, состоит из [0-9A-Za-z] не менее 64 символа
 GITHUB_TOKEN=your_custom_token
@@ -54,10 +55,10 @@ GITHUB_REPO_URL=https://github.com/user/repository.git
 
 ##### 7. Удаляем из текста папку /vendor в файле .gitignore, если она указана
 
-### Настраивание связи с хостингом или сервером
+### Настраиваем связь с хостингом или сервером
 
-#### 1. Проект не инициализирован на локальной машине
-##### 1.1. На локальной машине инициализируйте свой проект перейдя в корневую папку проекта и с помощью git запускаем команду
+#### 1. Проект не инициализирован на локальной машине (если инициализирован пропускаем данный пункт)
+##### 1.1. На локальной машине инициализируйте свой проект перейдя в корневую папку проекта и с помощью git запускаем команду (git должен быть установлен на локальной машине)
 ```shell
 git init
 ```
@@ -109,7 +110,7 @@ https://your_domain/web/github/GITHUB_API_VERSION/GITHUB_TOKEN/database?payload[
 ## Скачать выбранную базу данных. payload[url] - имя файла
 ## Указать можно .sql или .gz если они существуют в данном расширении
 https://your_domain/web/github/GITHUB_API_VERSION/GITHUB_TOKEN/database?payload[event]=download&payload[url]=name-db.sql
-## Создать текущую базу данных
+## Создать текущую базу данных (работает только на OS Linux)
 https://your_domain/web/github/GITHUB_API_VERSION/GITHUB_TOKEN/database?payload[event]=export
 
 # Работа с репозиторием
@@ -121,6 +122,11 @@ https://your_domain/web/github/GITHUB_API_VERSION/GITHUB_TOKEN/GITHUB_REPO_USER@
 https://your_domain/web/github/GITHUB_API_VERSION/GITHUB_TOKEN/GITHUB_REPO_USER@GITHUB_REPO_NAME/repository?payload[event]=checkout&payload[branch]=dev
 ## Проверить статус текущей ветки
 https://your_domain/web/github/GITHUB_API_VERSION/GITHUB_TOKEN/GITHUB_REPO_USER@GITHUB_REPO_NAME/repository?payload[event]=status
-## Получить логи. payload[count] - показывать количество логов
+## Получить логи. payload[count] - показывает количество записей из лога
 https://your_domain/web/github/GITHUB_API_VERSION/GITHUB_TOKEN/GITHUB_REPO_USER@GITHUB_REPO_NAME/repository?payload[event]=log&payload[count]=3
 ```
+
+### Заметка
+Бывает при переключении веток сайт не соотвествует версии ветки. Причина может быть, из-за отсутствии последних изменений версии из репозитория github (gitlab).
+Решает проблему комманда запуска обновления репозитория (проекта) из Github (Gitlab) с помощью адресной строки
+``https://your_domain/web/github/GITHUB_API_VERSION/GITHUB_TOKEN/GITHUB_REPO_USER@GITHUB_REPO_NAME/repository?payload[event]=pull``
