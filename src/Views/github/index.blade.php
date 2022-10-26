@@ -146,7 +146,7 @@
                                         {{$message}}
                                     @else
                                         {{$message['name']}}
-                                        <a class="download" href="{{$message['url']}}" target="_blank" title="Скачать"><span></span></a>
+                                        <!--a class="download" href="{{$message['url']}}" target="_blank" title="Скачать"><span></span></a-->
                                         <a class="delete" href="{{$message['url']}}&payload[delete]=1" target="_blank" title="Удалить"><span></span></a>
                                     @endif
                                 @else
