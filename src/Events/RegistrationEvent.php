@@ -36,6 +36,8 @@ class RegistrationEvent extends BaseEvent
      * @throws \ErrorException
      */
     protected function registration(array $data) : void{
+        $message = '';
+        $skip_log = false;
         // Инициализация параметров
         $email_github = 'git@github.com';
         $config_ssh = $data['config_ssh'];
@@ -114,6 +116,7 @@ class RegistrationEvent extends BaseEvent
                 else{
                     $message = "Не удалось добавить ssh ключ в систему: ".Str::afterLast($ssh_add, 'ERROR');
                 }
+                $skip_log = true;
             }
             else{$message = "Не удалось создать ssh ключ";}
 
@@ -139,11 +142,13 @@ class RegistrationEvent extends BaseEvent
             $command = ["Пользователь github подключён и авторизирован для данного проекта на этом сервере (хостинге).".PHP_EOL.$message];
         }
 
-        $this->writtingLog(
-            'RegistrationEvent: %1, result: %2',
-            ['%1', '%2'],
-            ['registration', implode(', ', $command)]
-        );
+        if(!$skip_log) {
+            $this->writtingLog(
+                'RegistrationEvent: %1, result: %2',
+                ['%1', '%2'],
+                ['registration', implode(', ', $command)]
+            );
+        }
         $this->result = $command;
     }
 

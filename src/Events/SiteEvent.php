@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 class SiteEvent extends BaseEvent
 {
 
-    protected array $allowMethods = ['version', 'pull', 'checkout', 'status', 'log'];
+    protected array $allowMethods = ['version', 'pull', 'checkout', 'status', 'log', 'reset'];
 
     /**
      * *Версия Гитхаба установлена на сайте (хостинг или сервер)
@@ -64,13 +64,18 @@ class SiteEvent extends BaseEvent
      * @throws \ErrorException
      */
     protected function checkout(array $data) : void{
+        $reset = '';
         $command = $this->commandGenerate("checkout {$data['branch']}");
+        if(Str::contains(Str::lower($command), 'error')){
+            $reset = $this->commandGenerate('reset --hard');
+            $command = $this->commandGenerate("checkout {$data['branch']}");
+        }
         $this->writtingLog(
             'SiteEvent: %1, result: %2',
             ['%1', '%2'],
             ['checkout', $command]
         );
-        $this->result = [$command];
+        $this->result = [$reset, $command];
     }
 
     /**
@@ -107,6 +112,20 @@ class SiteEvent extends BaseEvent
         $this->result = [$command];
     }
 
+    /**
+     * *Сброс отслеживаемых файлов и папок в индексе
+     * @param array $data
+     * @return void
+     */
+    protected function reset(array $data) : void{
+        $command = $this->commandGenerate('reset --hard');
+        $this->writtingLog(
+            'GithubEvent: %1, result: %2',
+            ['%1', '%2'],
+            ['Reset', $command]
+        );
+        $this->result = [$command];
+    }
 
     public function events(array $data) : bool{
 

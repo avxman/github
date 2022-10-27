@@ -101,14 +101,16 @@ class DatabaseEvent extends BaseEvent
      * @return void
      */
     protected function generateDatabaseData(array $data) : void{
-        $this->USER = ' -u '.env('DB_USERNAME', 'root');
-        $this->PASSWORD = env('DB_PASSWORD')?' -p\''.env('DB_PASSWORD').'\'':'';
-        $this->DATABASE = ' '.env('DB_DATABASE', 'database.loc');
-        $this->PORT = ' -P '.env('DB_PORT', '3306');
-        $this->HOST = ' -h '.env('DB_HOST', 'localhost');
+        $config = Config()->get('database');
+        $db = $config['connections'][$config['default']];
+        $this->USER = ' -u '.$db['username'];
+        $this->PASSWORD = $db['password']?' -p\''.$db['password'].'\'':'';
+        $this->DATABASE = ' '.$db['database'];
+        $this->PORT = ' -P '.$db['port'];
+        $this->HOST = ' -h '.$db['host'];
         $this->SKIPERROR = isset($data['skip_error'])?' -f':'';
         $this->FOLDER = $this->getFolder();
-        $this->FILE = Str::slug(Str::replace(['.', '-'], '_', env('APP_NAME')), '_')
+        $this->FILE = Str::slug(Str::replace(['.', '-'], '_', Config()->get('app.name')), '_')
             .Carbon::now(Config()->get('app.timezone'))->format('_Y_m_d_H_i_s')
             .'.sql';
         if(isset($data['is_zip'])){
@@ -152,7 +154,7 @@ class DatabaseEvent extends BaseEvent
      * @throws \ErrorException
      */
     protected function export(array $data): void{
-        $connecntion = $this->commandRaw("mysqldump{$this->USER}{$this->PASSWORD}{$this->HOST}{$this->PORT}{$this->DATABASE} -V", false);
+        $connecntion = $this->commandRaw("mysqldump{$this->USER}{$this->PASSWORD}{$this->HOST}{$this->PORT}{$this->DATABASE} -V");
         if(Str::contains($connecntion, 'Ver')) {
             $this->commandRaw("mysqldump{$this->USER}{$this->PASSWORD}{$this->HOST}{$this->PORT}{$this->DATABASE}{$this->ZIP} > {$this->FOLDER}/{$this->FILE}", true);
             $command = "База данных была создана {$this->FILE}. Рекомендуем перепроверить...";

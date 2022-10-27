@@ -54,7 +54,8 @@ class GithubEvent extends BaseEvent
         if(Str::contains(Str::lower($command), 'error')){
             $comm = $this->commandGenerate("stash save --keep-index");
             if(Str::contains(Str::lower($comm), 'saved')){
-                $command = $this->commandGenerate("pull");
+                $command = $this->commandGenerate('reset --hard');
+                $command .= PHP_EOL.$this->commandGenerate("pull");
                 $command .= PHP_EOL.'Обновлено. Однако, в процессе обновлении найден конфликт,
                 а именно, на сайте вручную внесли изменения: '.PHP_EOL.$comm;
             }
