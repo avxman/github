@@ -67,12 +67,13 @@ class SiteEvent extends BaseEvent
             $reset = $this->commandGenerate('reset --hard');
             $command = $this->commandGenerate("checkout {$data['branch']}");
         }
+        $this->pull($data);
         $this->writtingLog(
             'SiteEvent: %1, result: %2',
             ['%1', '%2'],
             ['checkout', $command]
         );
-        $this->result = [$reset, $command];
+        array_push($this->result, $reset, $command);
     }
 
     /**
