@@ -47,4 +47,7 @@ return [
     // Имя файла, куда будут записаны ключи
     'GITHUB_PATH_NAME_SSH'=>env('GITHUB_PATH_NAME_SSH', 'github_key'),
 
+    // Имя хоста для ключа ssh
+    'GITHUB_USER_NAME_SSH'=>env('GITHUB_USER_NAME_SSH', 'github.com'),
+
 ];

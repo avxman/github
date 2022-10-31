@@ -35,16 +35,17 @@ class RegistrationEvent extends BaseEvent
      * @return void
      */
     protected function registration(array $data) : void{
+        $url = 'github.com';
         $message = '';
         $skip_log = false;
         // Инициализация параметров
-        $email_github = 'git@github.com';
+        $email_github = 'git@'.$url;
         $config_ssh = $data['config_ssh'];
         $path_private = Str::finish(Str::finish($data['path_ssh'], '/'), $data['name_ssh']);
         $path_public = Str::finish(Str::finish($data['path_ssh'], '/'), Str::finish($data['name_ssh'], '.pub'));
 
         // Проверка на права записи через ssh ключ
-        $status = $this->commandRaw("ssh -T $email_github");
+        $status = $this->commandRaw("ssh -T git@".$this->config['GITHUB_USER_NAME_SSH']);
         $is_auth = Str::contains($status, Str::finish($this->config['GITHUB_REPO_USER'], Str::finish('/', $this->config['GITHUB_REPO_NAME'])));
 
         // Отключаем параллельную индексацию файлов в слабых системах
@@ -72,48 +73,56 @@ class RegistrationEvent extends BaseEvent
 
             // Читаем ssh ключ и выводим текст для ввода в github
             if(Str::contains($ssh_keygen, str_replace('~', '', $path_private))){
-                // Добавляем новый ssh ключ в систему
-                $ssh_add = $this->commandRaw("ssh-copy-id -i $path_private $email_github");
-                if(!Str::contains(Str::lower($ssh_add), 'error')){
-                    //
-                    $config_ssh_next = true;
-                    $file_exists = $this->commandRaw("ls -d $config_ssh");
-                    if(Str::contains(Str::lower($file_exists), 'no such file')){
-                        $this->commandRaw('echo -e \'Host github.com\' > '.$config_ssh);
-                        $this->commandRaw('echo -e \'\tUser '.$user.'\' >> '.$config_ssh);
+                //
+                $config_ssh_next = true;
+                $file_exists = $this->commandRaw("ls -d $config_ssh");
+                if(Str::contains(Str::lower($file_exists), 'no such file')){
+                    $this->commandRaw('echo -e \'Host '.$this->config['GITHUB_USER_NAME_SSH'].'\' > '.$config_ssh);
+                    //$this->commandRaw('echo -e \'\tUser '.$user.'\' >> '.$config_ssh);
+                    $this->commandRaw('echo -e \'\tHostName '.$url.'\' >> '.$config_ssh);
+                    $this->commandRaw('echo -e \'\tIdentityFile '.$path_private.'\' >> '.$config_ssh);
+                    $this->commandRaw('echo -e \'\tIdentitiesOnly yes\' >> '.$config_ssh);
+                    $this->commandRaw("chmod 600 $config_ssh");
+                    $this->commandRaw("chown $user $config_ssh");
+                }
+                else{
+                    $config_ssh_file = $this->commandRaw("cat $config_ssh");
+                    if(Str::contains(Str::lower($config_ssh_file), Str::lower('Host '.$this->config['GITHUB_USER_NAME_SSH']))){
+                        $ssh_file = $this->commandRaw("cat $path_public");
+                        $message = "В конфигурационном файле config уже найден Host ".$this->config['GITHUB_USER_NAME_SSH']."." .PHP_EOL
+                            ."Чтобы изменить файл нужно сделать это вручную. Указав параметры:".PHP_EOL
+                            ."Host ".$this->config['GITHUB_USER_NAME_SSH'].PHP_EOL
+                            ."HostName ".$url.PHP_EOL
+                            ."IdentityFile ".$path_private.PHP_EOL
+                            ."IdentitiesOnly yes".PHP_EOL
+                            .(Str::contains($ssh_file, 'ssh-rsa')
+                                ? PHP_EOL."Скопировать нижеуказанный текст и вставить в github репозитория:".PHP_EOL.PHP_EOL.$ssh_file.PHP_EOL
+                                :''
+                            );
+                        $config_ssh_next = false;
+                    }
+                    else{
+                        $this->commandRaw('echo -e \'\' >> '.$config_ssh);
+                        $this->commandRaw('echo -e \'Host '.$this->config['GITHUB_USER_NAME_SSH'].'\' >> '.$config_ssh);
+                        //$this->commandRaw('echo -e \'\tUser '.$user.'\' >> '.$config_ssh);
+                        $this->commandRaw('echo -e \'\tHostName '.$url.'\' >> '.$config_ssh);
                         $this->commandRaw('echo -e \'\tIdentityFile '.$path_private.'\' >> '.$config_ssh);
+                        $this->commandRaw('echo -e \'\tIdentitiesOnly yes\' >> '.$config_ssh);
                         $this->commandRaw("chmod 600 $config_ssh");
                         $this->commandRaw("chown $user $config_ssh");
                     }
-                    else{
-                        $config_ssh_file = $this->commandRaw("cat $config_ssh");
-                        if(Str::contains(Str::lower($config_ssh_file), Str::lower('Host github.com'))){
-                            $ssh_file = $this->commandRaw("cat $path_public");
-                            $message = "В конфигурационном файле config уже найден Host github.com." .PHP_EOL
-                                ."Чтобы изменить файл нужно сделать это вручную"
-                                .(Str::contains($ssh_file, 'ssh-rsa')
-                                    ? PHP_EOL."Скопировать нижеуказанный текст и вставить в github репозитория:".PHP_EOL.PHP_EOL.$ssh_file.PHP_EOL
-                                    :''
-                                );
-                            $config_ssh_next = false;
-                        }
-                        else{
-                            $this->commandRaw('echo -e \'\nHost github.com\' >> '.$config_ssh);
-                            $this->commandRaw('echo -e \'\tUser '.$user.'\' >> '.$config_ssh);
-                            $this->commandRaw('echo -e \'\tIdentityFile '.$path_private.'\' >> '.$config_ssh);
-                            $this->commandRaw("chmod 600 $config_ssh");
-                            $this->commandRaw("chown $user $config_ssh");
-                        }
-                    }
-                    // Конфигурационный файл был изменён, выводим ключ
-                    if($config_ssh_next){
-                        // Читаем открытый ssh ключ и выводим на экран для возможности вставки его в github репозиторий
-                        $ssh_file = $this->commandRaw("cat $path_public");
-                        $message = "Скопировать нижеуказанный текст и вставить в github репозитория:".PHP_EOL.PHP_EOL.$ssh_file.PHP_EOL;
-                    }
                 }
-                else{
+                // Добавляем новый ssh ключ в систему
+                $ssh_add = $this->commandRaw("ssh-copy-id -i $path_private $email_github");
+                if(Str::contains(Str::lower($ssh_add), 'error')){
                     $message = "Не удалось добавить ssh ключ в систему: ".str_replace('/^(.*)ERROR(.*)$/', '$2', $ssh_add);
+                }
+                // Конфигурационный файл был изменён, выводим ключ
+                elseif($config_ssh_next){
+                    // Читаем открытый ssh ключ и выводим на экран для возможности вставки его в github репозиторий
+                    $ssh_file = $this->commandRaw("cat $path_public");
+                    $message = $this->commandGenerate('remote set-url origin '.$this->config['GITHUB_REPO_URL']);
+                    $message .= PHP_EOL."Скопировать нижеуказанный текст и вставить в github репозитория:".PHP_EOL.PHP_EOL.$ssh_file.PHP_EOL;
                 }
                 $skip_log = true;
             }
