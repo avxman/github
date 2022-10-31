@@ -78,7 +78,7 @@ class RegistrationEvent extends BaseEvent
                 $file_exists = $this->commandRaw("ls -d $config_ssh");
                 if(Str::contains(Str::lower($file_exists), 'no such file')){
                     $this->commandRaw('echo -e \'Host '.$this->config['GITHUB_USER_NAME_SSH'].'\' > '.$config_ssh);
-                    //$this->commandRaw('echo -e \'\tUser '.$user.'\' >> '.$config_ssh);
+                    $this->commandRaw('echo -e \'\tUser '.$user.'\' >> '.$config_ssh);
                     $this->commandRaw('echo -e \'\tHostName '.$url.'\' >> '.$config_ssh);
                     $this->commandRaw('echo -e \'\tIdentityFile '.$path_private.'\' >> '.$config_ssh);
                     $this->commandRaw('echo -e \'\tIdentitiesOnly yes\' >> '.$config_ssh);
@@ -104,7 +104,7 @@ class RegistrationEvent extends BaseEvent
                     else{
                         $this->commandRaw('echo -e \'\' >> '.$config_ssh);
                         $this->commandRaw('echo -e \'Host '.$this->config['GITHUB_USER_NAME_SSH'].'\' >> '.$config_ssh);
-                        //$this->commandRaw('echo -e \'\tUser '.$user.'\' >> '.$config_ssh);
+                        $this->commandRaw('echo -e \'\tUser '.$user.'\' >> '.$config_ssh);
                         $this->commandRaw('echo -e \'\tHostName '.$url.'\' >> '.$config_ssh);
                         $this->commandRaw('echo -e \'\tIdentityFile '.$path_private.'\' >> '.$config_ssh);
                         $this->commandRaw('echo -e \'\tIdentitiesOnly yes\' >> '.$config_ssh);
