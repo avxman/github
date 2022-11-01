@@ -36,34 +36,49 @@ class RegistrationEvent extends BaseEvent
      * @throws \ErrorException
      */
     protected function registration(array $data) : void{
+
+        // Инициализация параметров
         $url = 'github.com';
         $message = '';
         $skip_log = false;
-        // Инициализация параметров
         $email_github = 'git@'.$url;
         $config_ssh = $data['config_ssh'];
         $path_private = Str::finish(Str::finish($data['path_ssh'], '/'), $data['name_ssh']);
         $path_public = Str::finish(Str::finish($data['path_ssh'], '/'), Str::finish($data['name_ssh'], '.pub'));
 
-        // Проверка на права записи через ssh ключ
+        // Отключаем параллельную индексацию файлов
+        $this->commandGenerate('config core.preloadIndex false');
+
+        // Проверка на права чтении и записи репозитория через ssh ключ или специальную ссылку
+        $isConnection = $this->commandGenerate("ls-remote ".$this->config['GITHUB_REPO_URL']);
         $status = $this->commandRaw("ssh -T git@".$this->config['GITHUB_USER_NAME_SSH']);
         $is_auth = Str::contains($status, Str::finish($this->config['GITHUB_REPO_USER'], Str::finish('/', $this->config['GITHUB_REPO_NAME'])));
 
-        // Отключаем параллельную индексацию файлов в слабых системах
-        $this->commandGenerate('config core.preloadIndex false');
+        // Связываем текущий (локальный) с удалённым (github.com) репозиторий
+        if(Str::contains(Str::lower($isConnection), 'head')){
 
-        if(!$is_auth){
+            // Получен доступ с помощью специальной ссылкой
+            $this->commandGenerate('remote set-url origin '.$this->config['GITHUB_REPO_URL']);
+            $message = PHP_EOL."Репозиторий связан с помощью специальной ссылкой:".PHP_EOL.$this->config['GITHUB_REPO_URL'].PHP_EOL;
 
-            // Получаем имя пользователя системы
-            $user = $this->commandRaw("ls -ld {$this->addGithubFolder()} | cut -d' ' -f3");
+            // Результат
+            $command = [$message];
 
-            // Проверяем ssh ключи на существования (private, public)
-            // private
+        }
+        elseif(!$is_auth){
+
+            // Репозиторий не привязан. Создаем связь с помощью ssh ключа
+            // Получаем имя пользователя в системе
+            $user = Str::replace(PHP_EOL, '', $this->commandRaw("ls -ld {$this->addGithubFolder()} | cut -d' ' -f3"));
+
+            // Проверяем ssh ключи на существования (private, public).
+            // Private
             $file_exists = $this->commandRaw("ls -d $path_private");
             if(!Str::contains(Str::lower($file_exists), 'no such file')){
                 $this->commandRaw("rm $path_private");
             }
-            // public
+
+            // Public
             $file_exists = $this->commandRaw("ls -d $path_public");
             if(!Str::contains(Str::lower($file_exists), 'no such file')){
                 $this->commandRaw("rm $path_public");
@@ -72,11 +87,11 @@ class RegistrationEvent extends BaseEvent
             // Генерируем ssh ключ
             $ssh_keygen = $this->commandRaw("ssh-keygen -f $path_private -C '$email_github' -t rsa -b 4096 -P '' -N ''");
 
-            // Читаем ssh ключ и выводим текст для ввода в github
+            // Читаем ssh ключ и выводим текст для ввода в репозиторий в github.com
             if(Str::contains($ssh_keygen, str_replace('~', '', $path_private))){
-                //
                 $config_ssh_next = true;
                 $file_exists = $this->commandRaw("ls -d $config_ssh");
+                // Конфигурационный файл ssh не существует - создаем его
                 if(Str::contains(Str::lower($file_exists), 'no such file')){
                     $this->commandRaw('echo -e \'Host '.$this->config['GITHUB_USER_NAME_SSH'].'\' > '.$config_ssh);
                     $this->commandRaw('echo -e \'\tUser '.$user.'\' >> '.$config_ssh);
@@ -87,8 +102,11 @@ class RegistrationEvent extends BaseEvent
                     $this->commandRaw("chown $user $config_ssh");
                 }
                 else{
+                    // Конфигурационный файл ssh существует
+                    // Проверяем существование подключаемого хоста
                     $config_ssh_file = $this->commandRaw("cat $config_ssh");
                     if(Str::contains(Str::lower($config_ssh_file), Str::lower('Host '.$this->config['GITHUB_USER_NAME_SSH']))){
+                        // Хост найден
                         $ssh_file = $this->commandRaw("cat $path_public");
                         $message = "В конфигурационном файле config уже найден Host ".$this->config['GITHUB_USER_NAME_SSH']."." .PHP_EOL
                             ."Чтобы изменить файл нужно сделать это вручную. Указав параметры:".PHP_EOL
@@ -103,6 +121,8 @@ class RegistrationEvent extends BaseEvent
                         $config_ssh_next = false;
                     }
                     else{
+                        // Хост не найден.
+                        // Добавляем новый хост в конфигурационном файле ssh
                         $this->commandRaw('echo -e \'\' >> '.$config_ssh);
                         $this->commandRaw('echo -e \'Host '.$this->config['GITHUB_USER_NAME_SSH'].'\' >> '.$config_ssh);
                         $this->commandRaw('echo -e \'\tUser '.$user.'\' >> '.$config_ssh);
@@ -113,7 +133,7 @@ class RegistrationEvent extends BaseEvent
                         $this->commandRaw("chown $user $config_ssh");
                     }
                 }
-                // Добавляем новый ssh ключ в систему
+                // Добавляем новый ssh ключ в операционную систему
                 $ssh_add = $this->commandRaw("ssh-copy-id -i $path_private $email_github");
                 if(Str::contains(Str::lower($ssh_add), 'error')){
                     $message = "Не удалось добавить ssh ключ в систему: ".str_replace('/^(.*)ERROR(.*)$/', '$2', $ssh_add);
@@ -152,6 +172,7 @@ class RegistrationEvent extends BaseEvent
             $command = ["Пользователь github подключён и авторизирован для данного проекта на этом сервере (хостинге).".PHP_EOL.$message];
         }
 
+        // Записываем в Лог файл
         if(!$skip_log) {
             $this->writtingLog(
                 'RegistrationEvent: %1, result: %2',
@@ -159,7 +180,10 @@ class RegistrationEvent extends BaseEvent
                 ['registration', implode(', ', $command)]
             );
         }
+
+        // Сохраняем все результаты для вывода их на экран
         $this->result = $command;
+
     }
 
 
