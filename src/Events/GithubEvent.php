@@ -50,6 +50,12 @@ class GithubEvent extends BaseEvent
      * @throws \ErrorException
      */
     protected function push(array $data) : void{
+        $branchTest = 'test';
+        $branch = str_replace('On branch ', '', stristr($this->commandGenerate("status"), PHP_EOL, true));
+        $this->commandGenerate("checkout -b {$branchTest}");
+        $this->commandGenerate("branch -D {$branch}");
+        $this->commandGenerate("checkout {$branch}");
+        $this->commandGenerate("branch -D {$branchTest}");
         $command = $this->commandGenerate('pull');
         if(Str::contains(Str::lower($command), 'error')){
             $comm = $this->commandGenerate("stash save --keep-index");
