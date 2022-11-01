@@ -35,6 +35,12 @@ class SiteEvent extends BaseEvent
      * @return void
      */
     protected function pull(array $data) : void{
+        $branchTest = 'test';
+        $branch = str_replace('On branch ', '', stristr($this->commandGenerate("status"), PHP_EOL, true));
+        $this->commandGenerate("checkout -b {$branchTest}");
+        $this->commandGenerate("branch -D {$branch}");
+        $this->commandGenerate("checkout {$branch}");
+        $this->commandGenerate("branch -D {$branchTest}");
         $command = $this->commandGenerate("pull");
         if(Str::contains(Str::lower($command), 'error')){
             $comm = $this->commandGenerate("stash save --keep-index");
@@ -62,6 +68,7 @@ class SiteEvent extends BaseEvent
      */
     protected function checkout(array $data) : void{
         $reset = '';
+        $branchTest = 'test';
         $command = $this->commandGenerate("checkout {$data['branch']}");
         if(Str::contains(Str::lower($command), 'error')){
             $reset = $this->commandGenerate('reset --hard');
