@@ -68,7 +68,6 @@ class SiteEvent extends BaseEvent
      */
     protected function checkout(array $data) : void{
         $reset = '';
-        $branchTest = 'test';
         $command = $this->commandGenerate("checkout {$data['branch']}");
         if(Str::contains(Str::lower($command), 'error')){
             $reset = $this->commandGenerate('reset --hard');
