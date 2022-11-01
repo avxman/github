@@ -162,7 +162,10 @@ https://your_domain/web/github/GITHUB_API_VERSION/GITHUB_TOKEN/GITHUB_REPO_USER@
 - Использовать "Personal access tokens" из настроек аккаунта Github (Gitlab). В параметре "Select scopes" установить галочки: gist, read:org, repo, workflow. При копировании проекта указываем путь: [https://personal_access_token@github.com/name_user_or_name_organization/name_repository](). При ошибки команды `git push` или похожих команд, нужно в файле /.git/config текущего проекта заменить ключ `url = ...` на `url = https://personal_access_token@github.com/name_user_or_name_organization/name_repository`
 #### Не удалось автоматически настроить ssh ключ
 Появилась ошибка о неудачном копировании ssh ключа в операционную систему!
-Решение: в файле /.env изменяем значения ключам:
+Решение 1. В файле /.env изменяем значения ключам:
 - GITHUB_PATH_NAME_SSH=указываем_другое_имя_файлу_ssh_ключам (к примеру, repository_github)
 - GITHUB_USER_NAME_SSH=указываем_другое_имя_подключаемого_пользователя (к примеру, avxman - имя пользователя на github.com)
 - GITHUB_REPO_URL=указываем_другую_ссылку_на_удалённый_репозиторий (используем тип подключение "ssh" заменив слово "github.com" на значение из ключа GITHUB_USER_NAME_SSH - git@GITHUB_USER_NAME_SSH:GITHUB_REPO_USER/GITHUB_REPO_NAME.git)
+  Решение 2. Добавить альтернативый способ связывание репозитория:
+- В файле /.env меняем (добавляем) ключ со значением ```GITHUB_REPO_URL=https://personal_access_token@github.com/name_user_or_name_organization/name_repository```
+- Запускаем повторную связь с репозиторием ``https://your_domain/web/github/GITHUB_API_VERSION/GITHUB_TOKEN/registration``
