@@ -240,7 +240,7 @@ final class PrintLog{
 // Настройка конфигурации
 $config = [
     'GITHUB_ENABLED'=>true,
-    'GITHUB_LINK'=>'https://personal_token@github.com/Doroshenko-agency/livecleantoday',
+    'GITHUB_LINK'=>'https://personal_token@github.com/user_name/repository',
 ];
 
 // Запускаем клонирование проекта из Github
