@@ -3,23 +3,26 @@
 namespace Avxman\Github;
 
 /**
- *
-*/
+ * Запуск клонирования репозитория из Github
+ */
 final class GInstall{
 
     /**
      * Конфигурация
-    */
+     * @var array $config = []
+     */
     private $config = [];
 
     /**
      * Список данных для вывода на экран
-    */
+     * @var array $log = []
+     */
     private $log = [];
 
     /**
      * Работа с git
-    */
+     * @return bool
+     */
     private function git() : bool
     {
 
@@ -44,7 +47,9 @@ final class GInstall{
 
     /**
      * Вызов git команды
-    */
+     * @param string $command
+     * @return string
+     */
     private function gitCommand(string $command) : string
     {
         return $this->command('git '.$command);
@@ -52,6 +57,8 @@ final class GInstall{
 
     /**
      * Вызов команды
+     * @param string $command
+     * @return string
      */
     private function command(string $command) : string
     {
@@ -67,7 +74,9 @@ final class GInstall{
 
     /**
      * Проверка на существующие методы
-    */
+     * @param array $config = []
+     * @return bool
+     */
     private function isValidation(array $config = []) : bool
     {
         $hasError = false;
@@ -91,7 +100,9 @@ final class GInstall{
 
     /**
      * Инициализация проекта (репозитория)
-    */
+     * @param array $config = []
+     * @return bool
+     */
     public function run(array $config = []) : bool
     {
 
@@ -115,6 +126,7 @@ final class GInstall{
 
     /**
      * Удаляем установочный файл
+     * @return bool
      */
     public function remove() : bool
     {
@@ -123,6 +135,8 @@ final class GInstall{
 
     /**
      * Записываем результаты
+     * @param string $text
+     * @return void
      */
     public function writeLog(string $text) : void
     {
@@ -131,6 +145,7 @@ final class GInstall{
 
     /**
      * Вывод результата
+     * @return array
      */
     public function printLog() : array
     {
@@ -140,37 +155,72 @@ final class GInstall{
 }
 
 /**
- *
-*/
+ * Вывод логов
+ */
 final class PrintLog{
 
     /**
-     * Результаты
-    */
+     * Получены результаты
+     * @var array $message = []
+     */
     private $message = [];
 
     /**
-     * Преобразовываем текст в шаблонный вид
-    */
-    private function theme(string $message) : void
+     * Вид шаблона
+     * @param string $content
+     * @return string
+     */
+    private function template(string $content) : string
     {
-        $result = [];
-        echo implode('<br>', $result);
+        return implode('', [
+            '<!doctype html>',
+            '<html lang="en">',
+            '<head>',
+            '<meta charset="UTF-8">',
+            '<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">',
+            '<title>Копирование репозитория из Github</title>',
+            '<style>',
+            'html,body{height: 100%;}body{background: #000;color: #fff;display: flex;margin: 0;}.content{display: flex;align-items: flex-start;justify-content: center;flex-flow: wrap;flex-direction: column;text-align: left;max-width: 50%;margin: auto;background: #a13737;padding: 30px;max-height: 50%;}',
+            '.content > .item{display: flex;}',
+            '.content > .item::before{content: "";width: 12px;height: 12px;min-width: 12px;margin: 4px 10px 0 0;background: #0b1c0f;box-shadow: inset 0 0 0px 2px coral;}',
+            '</style>',
+            '</head>',
+            '<body>',
+            '<div class="content">',
+            $content,
+            '</div>',
+            '</body>',
+            '</html>',
+        ]);
     }
 
     /**
-     * Запускаем вывод результата на экран
-    */
+     * Преобразовываем текст в шаблонный HTMl вид
+     * @param string $message
+     * @return string
+     */
+    private function getLine(string $message) : string
+    {
+        return implode('', ['<p class="item">', $message, '</p>']);
+    }
+
+    /**
+     * Вывод результата на экран
+     * @return void
+     */
     private function start() : void
     {
+        $result = [];
         foreach ($this->message as $message){
-            $this->theme($message);
+            $result[] = $this->getLine($message);
         }
+        echo $this->template(implode('', $result));
     }
 
     /**
      * Конструктор
-    */
+     * @param array $message
+     */
     public function __construct(array $message)
     {
         $this->message = $message;
@@ -178,7 +228,8 @@ final class PrintLog{
 
     /**
      * Инициализация вывода результата
-    */
+     * @return void
+     */
     public function run() : void
     {
         $this->start();
@@ -186,10 +237,10 @@ final class PrintLog{
 
 }
 
-// Настройка конфигураций
+// Настройка конфигурации
 $config = [
     'GITHUB_ENABLED'=>true,
-    'GITHUB_LINK'=>'https://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@github.com/Doroshenko-agency/livecleantoday',
+    'GITHUB_LINK'=>'https://personal_token@github.com/Doroshenko-agency/livecleantoday',
 ];
 
 // Запускаем клонирование проекта из Github
