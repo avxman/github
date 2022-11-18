@@ -242,7 +242,7 @@ final class PrintLog{
 // Настройка конфигурации
 $config = [
     'GITHUB_ENABLED'=>true,
-    'GITHUB_LINK'=>'https://personal_token@github.com/user_name/repository',
+    'GITHUB_LINK'=>$_REQUEST['link']??'https://personal_token@github.com/user_name/repository',
 ];
 
 // Запускаем клонирование проекта из Github
