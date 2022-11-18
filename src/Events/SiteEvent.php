@@ -12,13 +12,38 @@ use Illuminate\Support\Str;
 class SiteEvent extends BaseEvent
 {
 
+    /**
+     * Список разрешенных событий для вызовов команд
+     * @var array $allowMethods
+     */
     protected array $allowMethods = ['version', 'pull', 'checkout', 'status', 'log', 'reset'];
+
+    /**
+     * Обновление ветки из удалённого репозитория
+     * @param string $branch_name
+     * @return string
+     */
+    protected function update(string $branch_name) : string
+    {
+        $branchTest = 'test';
+        $branch = $branch_name;
+        //$branchCurrent = preg_replace('/\\n/', '', $this->commandGenerate("rev-parse --abbrev-ref HEAD"));
+        $branchList = Str::contains(preg_replace('/\\n/', ' ', $this->commandGenerate('branch --list')), $branchTest);
+        $command[] = PHP_EOL.$this->commandGenerate('reset --hard');
+        $command[] = $branchList
+            ? PHP_EOL.$this->commandGenerate("checkout {$branchTest}")
+            : PHP_EOL.$this->commandGenerate("checkout -b {$branchTest}");
+        $command[] = PHP_EOL.$this->commandGenerate("branch -D {$branch}");
+        $command[] = PHP_EOL.$this->commandGenerate("checkout {$branch}");
+        $command[] = PHP_EOL.$this->commandGenerate("branch -D {$branchTest}");
+        $command[] = PHP_EOL.$this->commandGenerate("pull");
+        return implode('', $command);
+    }
 
     /**
      * *Версия Гитхаба установлена на сайте (хостинг или сервер)
      * @param array $data
      * @return void
-     * @throws \ErrorException
      */
     protected function version(array $data = []) : void{
         $command = $this->commandGenerate("--version");
@@ -34,62 +59,45 @@ class SiteEvent extends BaseEvent
      * *Обновления сайта из Гитхаба
      * @param array $data
      * @return void
-     * @throws \ErrorException
      */
     protected function pull(array $data) : void{
-        $command = $this->commandGenerate("pull");
-        if(Str::contains(Str::lower($command), 'error')){
-            $comm = $this->commandGenerate("stash save --keep-index");
-            if(Str::contains(Str::lower($comm), 'saved')){
-                $command = $this->commandGenerate("pull");
-                $command .= PHP_EOL.'Обновлено. Однако, в процессе обновлении найден конфликт,
-                а именно, на сайте вручную внесли изменения: '.PHP_EOL.$comm;
-            }
-            else{
-                $command = $comm;
-            }
-        }
-        $branchTest = 'test';
-        $branch = str_replace('On branch ', '', stristr($this->commandGenerate("status"), PHP_EOL, true));
-        $reload = PHP_EOL.$this->commandGenerate("checkout -b {$branchTest}");
-        $reload .= PHP_EOL.$this->commandGenerate("branch -D {$branch}");
-        $reload .= PHP_EOL.$this->commandGenerate("checkout {$branch}");
-        $reload .= PHP_EOL.$this->commandGenerate("branch -D {$branchTest}");
+
+        $message = $this->update(
+            preg_replace('/\\n/', '', $this->commandGenerate("rev-parse --abbrev-ref HEAD"))
+        );
         $this->writtingLog(
             'SiteEvent: %1, result: %2',
             ['%1', '%2'],
-            ['pull', $command.$reload]
+            ['pull', $message]
         );
-        $this->result = [$command, $reload];
+        $this->result = [$message];
+
     }
 
     /**
      * *Переключение веток
      * @param array $data
      * @return void
-     * @throws \ErrorException
      */
     protected function checkout(array $data) : void{
-        $reset = '';
-        $command = $this->commandGenerate("checkout {$data['branch']}");
-        if(Str::contains(Str::lower($command), 'error')){
-            $reset = $this->commandGenerate('reset --hard');
-            $command = $this->commandGenerate("checkout {$data['branch']}");
-        }
-        $this->pull($data);
+
+        $message = $this->update(
+            $data['branch']
+            ?? preg_replace('/\\n/', '', $this->commandGenerate("rev-parse --abbrev-ref HEAD"))
+        );
         $this->writtingLog(
             'SiteEvent: %1, result: %2',
             ['%1', '%2'],
-            ['checkout', $command]
+            ['checkout', $message]
         );
-        array_push($this->result, $reset, $command);
+        $this->result[] = $message;
+
     }
 
     /**
      * *Проверка статуса
      * @param array $data
      * @return void
-     * @throws \ErrorException
      */
     protected function status(array $data) : void{
         $command = $this->commandGenerate("status");
@@ -105,7 +113,6 @@ class SiteEvent extends BaseEvent
      * *Показать последние логи
      * @param array $data
      * @return void
-     * @throws \ErrorException
      */
     protected function log(array $data) : void{
         $count = $data['count']??10;
@@ -134,6 +141,11 @@ class SiteEvent extends BaseEvent
         $this->result = [$command];
     }
 
+    /**
+     * Вызов событий
+     * @param array $data
+     * @return bool
+     */
     public function events(array $data) : bool{
 
         $this->is_event = true;
