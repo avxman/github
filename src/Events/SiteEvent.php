@@ -35,30 +35,43 @@ class SiteEvent extends BaseEvent
      * @return void
      */
     protected function pull(array $data) : void{
-        $command = $this->commandGenerate("pull");
-        if(Str::contains(Str::lower($command), 'error')){
-            $comm = $this->commandGenerate("stash save --keep-index");
-            if(Str::contains(Str::lower($comm), 'saved')){
-                $command = $this->commandGenerate("pull");
-                $command .= PHP_EOL.'Обновлено. Однако, в процессе обновлении найден конфликт,
-                а именно, на сайте вручную внесли изменения: '.PHP_EOL.$comm;
-            }
-            else{
-                $command = $comm;
-            }
-        }
+        $reload = [];
+        $reload_message = '';
         $branchTest = 'test';
-        $branch = str_replace('On branch ', '', stristr($this->commandGenerate("status"), PHP_EOL, true));
-        $reload = PHP_EOL.$this->commandGenerate("checkout -b {$branchTest}");
-        $reload .= PHP_EOL.$this->commandGenerate("branch -D {$branch}");
-        $reload .= PHP_EOL.$this->commandGenerate("checkout {$branch}");
-        $reload .= PHP_EOL.$this->commandGenerate("branch -D {$branchTest}");
+        $command = $this->commandGenerate("pull");
+        $low_comment = Str::lower($command);
+
+        if(Str::contains($low_comment, 'no tracking')){
+            $command .= PHP_EOL.'Удалённая ветка с текущим именним не существует. Попробуйте переключится на другую ветку и обратно вернуся на эту ветку.';
+        }
+        else{
+            if(Str::contains(Str::lower($low_comment), 'error')){
+                $comm = $this->commandGenerate("stash save --keep-index");
+                if(Str::contains(Str::lower($comm), 'saved')){
+                    $command = $this->commandGenerate("pull");
+                    $command .= PHP_EOL.'Обновлено. Однако, в процессе обновлении найден конфликт,
+                а именно, на сайте вручную внесли изменения: '.PHP_EOL.$comm;
+                }
+                else{
+                    $command = $comm;
+                }
+            }
+            $branch = preg_replace('/\\n/', '', $this->commandGenerate("symbolic-ref --short HEAD"));
+            if($branchTest !== $branch){
+                $reload[] = PHP_EOL.$this->commandGenerate("checkout -b {$branchTest}");
+                $reload[] = PHP_EOL.$this->commandGenerate("branch -D {$branch}");
+                $reload[] = PHP_EOL.$this->commandGenerate("checkout {$branch}");
+                $reload[] = PHP_EOL.$this->commandGenerate("branch -D {$branchTest}");
+            }
+            $reload_message = implode('', $reload);
+        }
+
         $this->writtingLog(
             'SiteEvent: %1, result: %2',
             ['%1', '%2'],
-            ['pull', $command.$reload]
+            ['pull', $command.$reload_message]
         );
-        $this->result = [$command, $reload];
+        $this->result = [$command, $reload_message];
     }
 
     /**
