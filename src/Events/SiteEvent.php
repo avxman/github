@@ -16,7 +16,7 @@ class SiteEvent extends BaseEvent
      * Список разрешенных событий для вызовов команд
      * @var array $allowMethods
      */
-    protected $allowMethods = ['version', 'pull', 'checkout', 'status', 'log', 'reset', 'clear'];
+    protected $allowMethods = ['version', 'pull', 'checkout', 'status', 'log', 'reset', 'clear', 'branchremote', 'branchlocal'];
 
     /**
      * *Версия Гитхаба установлена на сайте (хостинг или сервер)
