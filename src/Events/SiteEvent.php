@@ -143,6 +143,44 @@ class SiteEvent extends BaseEvent
     }
 
     /**
+     * Список веток из удалённого репозитория
+     * @return void
+     */
+    protected function branchremote() : void
+    {
+        $branch_remote = [];
+        preg_match_all('/refs\/heads\/(.*?)\\n+/i', $this->commandGenerate("ls-remote"), $branch_remote);
+        $command = count($branch_remote[1]??[]) ? implode(PHP_EOL, $branch_remote[1]) : 'Нет ни одной ветки из удалённого репозитория';
+
+        $this->writtingLog(
+            'SiteEvent: %1, result: %2',
+            ['%1', '%2'],
+            ['BranchRemote', $command]
+        );
+        $this->result = [$command];
+    }
+
+    /**
+     * Список веток из удалённого репозитория
+     * @return void
+     */
+    protected function branchlocal() : void
+    {
+
+        $branch_local = [];
+        preg_match_all('/\s(\w.*)\\n/', $this->commandGenerate('branch --list'), $branch_local);
+
+        $command = count($branch_local[1]??[]) ? implode(PHP_EOL, $branch_local[1]) : 'Нет ни одной локальной ветки';
+
+        $this->writtingLog(
+            'SiteEvent: %1, result: %2',
+            ['%1', '%2'],
+            ['BranchLocal', $command]
+        );
+        $this->result = [$command];
+    }
+
+    /**
      * Вызов событий
      * @param array $data
      * @return bool
