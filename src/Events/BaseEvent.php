@@ -51,6 +51,14 @@ abstract class BaseEvent
     protected $result = [];
 
     /**
+     * Тестовая ветка
+     * Данная ветка требуется для переключения на её,
+     * чтобы можно было удалить и обновить данные активной ветки из удалённого репозитория
+     * @var string $tempBranch = 'test'
+    */
+    protected $tempBranch = 'test';
+
+    /**
      * *Проверка на использование выбранного метода
      * @param string $name_method
      * @return bool
@@ -151,6 +159,33 @@ abstract class BaseEvent
      */
     public function getResult() : array{
         return $this->result;
+    }
+
+    /**
+     * Обновление ветки из удалённого репозитория
+     * @param string $branch_name
+     * @return string
+     */
+    protected function update(string $branch_name) : string
+    {
+        $branchTest = $this->tempBranch;
+        $branch = $branch_name;
+
+        if(!Str::contains(preg_replace('/\\n/', ' ', $this->commandGenerate('branch --list')), $branch)){
+            return PHP_EOL.'The branch '.$branch.' is not found. It is absent in a remote repository';
+        }
+
+        //$branchCurrent = preg_replace('/\\n/', '', $this->commandGenerate("rev-parse --abbrev-ref HEAD"));
+        $branchList = Str::contains(preg_replace('/\\n/', ' ', $this->commandGenerate('branch --list')), $branchTest);
+        $command[] = PHP_EOL.$this->commandGenerate('reset --hard');
+        $command[] = $branchList
+            ? PHP_EOL.$this->commandGenerate("checkout {$branchTest}")
+            : PHP_EOL.$this->commandGenerate("checkout -b {$branchTest}");
+        $command[] = PHP_EOL.$this->commandGenerate("branch -D {$branch}");
+        $command[] = PHP_EOL.$this->commandGenerate("checkout {$branch}");
+        $command[] = PHP_EOL.$this->commandGenerate("branch -D {$branchTest}");
+        $command[] = PHP_EOL.$this->commandGenerate("pull");
+        return implode('', $command);
     }
 
 }

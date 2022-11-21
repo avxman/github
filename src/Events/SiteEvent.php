@@ -19,28 +19,6 @@ class SiteEvent extends BaseEvent
     protected $allowMethods = ['version', 'pull', 'checkout', 'status', 'log', 'reset'];
 
     /**
-     * Обновление ветки из удалённого репозитория
-     * @param string $branch_name
-     * @return string
-     */
-    protected function update(string $branch_name) : string
-    {
-        $branchTest = 'test';
-        $branch = $branch_name;
-        //$branchCurrent = preg_replace('/\\n/', '', $this->commandGenerate("rev-parse --abbrev-ref HEAD"));
-        $branchList = Str::contains(preg_replace('/\\n/', ' ', $this->commandGenerate('branch --list')), $branchTest);
-        $command[] = PHP_EOL.$this->commandGenerate('reset --hard');
-        $command[] = $branchList
-            ? PHP_EOL.$this->commandGenerate("checkout {$branchTest}")
-            : PHP_EOL.$this->commandGenerate("checkout -b {$branchTest}");
-        $command[] = PHP_EOL.$this->commandGenerate("branch -D {$branch}");
-        $command[] = PHP_EOL.$this->commandGenerate("checkout {$branch}");
-        $command[] = PHP_EOL.$this->commandGenerate("branch -D {$branchTest}");
-        $command[] = PHP_EOL.$this->commandGenerate("pull");
-        return implode('', $command);
-    }
-
-    /**
      * *Версия Гитхаба установлена на сайте (хостинг или сервер)
      * @param array $data
      * @return void
