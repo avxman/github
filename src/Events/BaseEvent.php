@@ -171,8 +171,12 @@ abstract class BaseEvent
         $branchTest = $this->tempBranch;
         $branch = $branch_name;
 
-        if(!Str::contains(preg_replace('/\\n/', ' ', $this->commandGenerate('branch --list')), $branch)){
+
+        if(!Str::contains(preg_replace('/\\t/', '',$this->commandGenerate("ls-remote")), 'refs/heads/'.$branch)){
             return PHP_EOL.'The branch '.$branch.' is not found. It is absent in a remote repository';
+        }
+        elseif(!Str::contains(preg_replace('/\\n/', ' ', $this->commandGenerate('branch --list')), $branch)){
+            $command[] = PHP_EOL.$this->commandGenerate("checkout -b {$branch}");
         }
 
         //$branchCurrent = preg_replace('/\\n/', '', $this->commandGenerate("rev-parse --abbrev-ref HEAD"));
