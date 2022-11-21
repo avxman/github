@@ -16,7 +16,7 @@ class SiteEvent extends BaseEvent
      * Список разрешенных событий для вызовов команд
      * @var array $allowMethods
      */
-    protected $allowMethods = ['version', 'pull', 'checkout', 'status', 'log', 'reset'];
+    protected $allowMethods = ['version', 'pull', 'checkout', 'status', 'log', 'reset', 'clear'];
 
     /**
      * *Версия Гитхаба установлена на сайте (хостинг или сервер)
@@ -112,9 +112,32 @@ class SiteEvent extends BaseEvent
     protected function reset(array $data) : void{
         $command = $this->commandGenerate('reset --hard');
         $this->writtingLog(
-            'GithubEvent: %1, result: %2',
+            'SiteEvent: %1, result: %2',
             ['%1', '%2'],
             ['Reset', $command]
+        );
+        $this->result = [$command];
+    }
+
+    /**
+     * Очистка всех не существующих веток из локальной среды
+     * которые отсутствуют в удалённом репозитории
+    */
+    protected function clear() : void
+    {
+        $branch_remote = $branch_local = [];
+        preg_match_all('/refs\/heads\/(.*?)\\n+/i', $this->commandGenerate("ls-remote"), $branch_remote);
+        preg_match_all('/\s(\w.*)\\n/', $this->commandGenerate('branch --list'), $branch_local);
+
+        if($diff = implode(' ', array_diff($branch_local[1]??[], $branch_remote[1]??[]))){
+            $command = $this->commandGenerate("branch -D ".$diff);
+        }
+        else {$command = 'Не используемые ветки не найдены';}
+
+        $this->writtingLog(
+            'SiteEvent: %1, result: %2',
+            ['%1', '%2'],
+            ['Clear', $command]
         );
         $this->result = [$command];
     }
