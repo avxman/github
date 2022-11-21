@@ -50,29 +50,13 @@ class GithubEvent extends BaseEvent
      * @throws \ErrorException
      */
     protected function push(array $data) : void{
-        $command = $this->commandGenerate('pull');
-        if(Str::contains(Str::lower($command), 'error')){
-            $comm = $this->commandGenerate("stash save --keep-index");
-            if(Str::contains(Str::lower($comm), 'saved')){
-                $command = $this->commandGenerate('reset --hard');
-                $command .= PHP_EOL.$this->commandGenerate("pull");
-                $command .= PHP_EOL.'Обновлено. Однако, в процессе обновлении найден конфликт,
-                а именно, на сайте вручную внесли изменения: '.PHP_EOL.$comm;
-            }
-            else{
-                $command = $comm;
-            }
-        }
-        $branchTest = 'test';
-        $branch = str_replace('On branch ', '', stristr($this->commandGenerate("status"), PHP_EOL, true));
-        $reload = PHP_EOL.$this->commandGenerate("checkout -b {$branchTest}");
-        $reload .= PHP_EOL.$this->commandGenerate("branch -D {$branch}");
-        $reload .= PHP_EOL.$this->commandGenerate("checkout {$branch}");
-        $reload .= PHP_EOL.$this->commandGenerate("branch -D {$branchTest}");
+        $command = $this->update(
+            preg_replace('/\\n/', '', $this->commandGenerate("rev-parse --abbrev-ref HEAD"))
+        );
         $this->writtingLog(
             'GithubEvent: %1, result: %2',
             ['%1', '%2'],
-            [$this->server['HTTP_X_GITHUB_EVENT']??'Push', $command.$reload]
+            [$this->server['HTTP_X_GITHUB_EVENT']??'Push', $command]
         );
     }
 
