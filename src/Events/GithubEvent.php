@@ -42,34 +42,40 @@ class GithubEvent extends BaseEvent
     }
 
     /**
+     * Обновление ветки из удалённого репозитория
+     * @param string $branch_name
+     * @return string
+     */
+    protected function update(string $branch_name) : string
+    {
+        $branchTest = 'test';
+        $branch = $branch_name;
+        //$branchCurrent = preg_replace('/\\n/', '', $this->commandGenerate("rev-parse --abbrev-ref HEAD"));
+        $branchList = Str::contains(preg_replace('/\\n/', ' ', $this->commandGenerate('branch --list')), $branchTest);
+        $command[] = PHP_EOL.$this->commandGenerate('reset --hard');
+        $command[] = $branchList
+            ? PHP_EOL.$this->commandGenerate("checkout {$branchTest}")
+            : PHP_EOL.$this->commandGenerate("checkout -b {$branchTest}");
+        $command[] = PHP_EOL.$this->commandGenerate("branch -D {$branch}");
+        $command[] = PHP_EOL.$this->commandGenerate("checkout {$branch}");
+        $command[] = PHP_EOL.$this->commandGenerate("branch -D {$branchTest}");
+        $command[] = PHP_EOL.$this->commandGenerate("pull");
+        return implode('', $command);
+    }
+
+    /**
      * *Обновления сайта из Гитхаба
      * @param array $data
      * @return void
      */
     protected function push(array $data) : void{
-        $command = $this->commandGenerate('pull');
-        if(Str::contains(Str::lower($command), 'error')){
-            $comm = $this->commandGenerate("stash save --keep-index");
-            if(Str::contains(Str::lower($comm), 'saved')){
-                $command = $this->commandGenerate('reset --hard');
-                $command .= PHP_EOL.$this->commandGenerate("pull");
-                $command .= PHP_EOL.'Обновлено. Однако, в процессе обновлении найден конфликт,
-                а именно, на сайте вручную внесли изменения: '.PHP_EOL.$comm;
-            }
-            else{
-                $command = $comm;
-            }
-        }
-        $branchTest = 'test';
-        $branch = str_replace('On branch ', '', stristr($this->commandGenerate("status"), PHP_EOL, true));
-        $reload = PHP_EOL.$this->commandGenerate("checkout -b {$branchTest}");
-        $reload .= PHP_EOL.$this->commandGenerate("branch -D {$branch}");
-        $reload .= PHP_EOL.$this->commandGenerate("checkout {$branch}");
-        $reload .= PHP_EOL.$this->commandGenerate("branch -D {$branchTest}");
+        $command = $this->update(
+            preg_replace('/\\n/', '', $this->commandGenerate("rev-parse --abbrev-ref HEAD"))
+        );
         $this->writtingLog(
             'GithubEvent: %1, result: %2',
             ['%1', '%2'],
-            [$this->server['HTTP_X_GITHUB_EVENT']??'Push', $command.$reload]
+            [$this->server['HTTP_X_GITHUB_EVENT']??'Push', $command]
         );
     }
 
