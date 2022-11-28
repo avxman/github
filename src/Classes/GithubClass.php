@@ -60,13 +60,19 @@ abstract class GithubClass{
      * @param BaseConnection $instance тип подключения (Гидхаб или Сайт)
      * @return array список данных полученых после валидации
      */
-    protected function data(BaseConnection $instance) : array{
+    protected function data(BaseConnection $instance, bool $isAdmin = false) : array{
+
+        if($isAdmin){
+            return $instance->getData();
+        }
+
         if (!count($result = $instance->getData())){
             $messages = array_merge(['Данные не получены'], $instance->errorMessage());
             $this->message->setMessages($messages)->errors();
             return [];
         }
         return $result;
+
     }
 
     /**

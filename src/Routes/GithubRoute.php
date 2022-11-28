@@ -129,6 +129,27 @@ class GithubRoute extends Route
     }
 
     /**
+     * Маршруты для Админке
+     * @param array $config
+     * @return void
+     */
+    protected static function adminRoutes(array $config) : void{
+        $uri = self::$uri.'admin';
+        $wheres = [
+            'version'=>$config['GITHUB_API_VERSION'],
+            'secret'=>$config['GITHUB_TOKEN'],
+        ];
+        self::group(['prefix'=>self::$prefix_wep, 'as'=>self::$as_name.'web.'], function() use ($wheres, $uri){
+            self::any($uri.'/payload', 'Avxman\Github\Controllers\Web\AdminGithubWebController@payload')
+                ->name('payload')
+                ->where($wheres);
+            self::any($uri, 'Avxman\Github\Controllers\Web\AdminGithubWebController@index')
+                ->name('admin')
+                ->where($wheres);
+        });
+    }
+
+    /**
      * Маршруты для остальных запросов
      * @param array $config
      * @return void
@@ -154,6 +175,7 @@ class GithubRoute extends Route
         self::registrationRoutes($config);
         self::databaseRoutes($config);
         self::repositoryRoutes($config);
+        self::adminRoutes($config);
 
         // Данный метод должен всегда находится в конце данного метода
         self::fallbackRoutes($config);

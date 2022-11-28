@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static void instance()
  * @method static void registrationInstance()
  * @method static void databaseInstance()
+ * @method static void adminInstance()
  * @method static array getResult()
  * @method static bool isGithub()
  *
