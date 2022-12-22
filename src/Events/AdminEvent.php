@@ -17,7 +17,7 @@ class AdminEvent extends BaseEvent
      * Список разрешенных событий для вызовов команд
      * @var array $allowMethods
      */
-    protected $allowMethods = ['home'];
+    protected array $allowMethods = ['home'];
 
     protected function menu() : void
     {
