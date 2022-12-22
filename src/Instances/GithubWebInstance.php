@@ -2,9 +2,11 @@
 
 namespace Avxman\Github\Instances;
 
+use Avxman\Github\Connections\AdminConnection;
 use Avxman\Github\Connections\DatabaseConnection;
 use Avxman\Github\Connections\RegistrationConnection;
 use Avxman\Github\Connections\SiteConnection;
+use Avxman\Github\Events\AdminEvent;
 use Avxman\Github\Events\DatabaseEvent;
 use Avxman\Github\Events\RegistrationEvent;
 use Avxman\Github\Events\SiteEvent;
@@ -69,6 +71,26 @@ class GithubWebInstance extends GithubClass{
         $result = $this->data($instance);
 
         $event = new DatabaseEvent($this->server, $this->config);
+
+        $this->event($event, $result);
+
+        $this->result = $event->getResult();
+
+    }
+
+    /**
+     * Работа с Админкой
+     * @return void
+     */
+    public function adminInstance() : void{
+
+        $instance = new AdminConnection($this->server, $this->config);
+
+        $this->connection($instance);
+
+        $result = $this->data($instance, true);
+
+        $event = new AdminEvent($this->server, $this->config);
 
         $this->event($event, $result);
 

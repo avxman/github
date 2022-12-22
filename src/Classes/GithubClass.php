@@ -62,13 +62,19 @@ abstract class GithubClass{
      * @return array список данных полученных после валидации
      * @throws \ErrorException
      */
-    protected function data(BaseConnection $instance) : array{
+    protected function data(BaseConnection $instance, bool $isAdmin = false) : array{
+
+        if($isAdmin){
+            return $instance->getData();
+        }
+
         if (!count($result = $instance->getData())){
             $messages = array_merge(['Данные не получены'], $instance->errorMessage());
             $this->message->setMessages($messages)->errors();
             return [];
         }
         return $result;
+
     }
 
     /**
